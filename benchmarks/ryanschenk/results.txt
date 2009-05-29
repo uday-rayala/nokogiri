@@ -1,0 +1,16 @@
+                               user     system      total        real
+nokogiri search            0.010000   0.010000   0.020000 (  0.009638)
+nokogiri iterating         0.490000   0.070000   0.560000 (  0.563687)
+nokogiri search            0.010000   0.000000   0.010000 (  0.011288)
+nokogiri iterating         0.260000   0.030000   0.290000 (  0.289096)
+nokogiri search            0.010000   0.000000   0.010000 (  0.009785)
+nokogiri iterating         0.250000   0.040000   0.290000 (  0.291757)
+XPath'd 300000 nodes
+                               user     system      total        real
+libxml-ruby search         0.010000   0.000000   0.010000 (  0.011005)
+libxml-ruby iterating      0.200000   0.010000   0.210000 (  0.217037)
+libxml-ruby search         0.010000   0.000000   0.010000 (  0.011833)
+libxml-ruby iterating      0.200000   0.020000   0.220000 (  0.223582)
+libxml-ruby search         0.010000   0.000000   0.010000 (  0.010605)
+libxml-ruby iterating      0.220000   0.010000   0.230000 (  0.228860)
+XPath'd 300000 nodes
