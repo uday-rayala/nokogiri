@@ -1,16 +1,66 @@
+# REL_1.2.3
                                user     system      total        real
-nokogiri search            0.010000   0.010000   0.020000 (  0.009638)
-nokogiri iterating         0.490000   0.070000   0.560000 (  0.563687)
-nokogiri search            0.010000   0.000000   0.010000 (  0.011288)
-nokogiri iterating         0.260000   0.030000   0.290000 (  0.289096)
-nokogiri search            0.010000   0.000000   0.010000 (  0.009785)
-nokogiri iterating         0.250000   0.040000   0.290000 (  0.291757)
+nokogiri search            0.010000   0.000000   0.010000 (  0.010419)
+nokogiri iterating         0.740000   0.110000   0.850000 (  0.906538)
+nokogiri search            0.010000   0.000000   0.010000 (  0.010713)
+nokogiri iterating         0.270000   0.070000   0.340000 (  0.352007)
+nokogiri search            0.020000   0.000000   0.020000 (  0.014419)
+nokogiri iterating         0.280000   0.050000   0.330000 (  0.343596)
 XPath'd 300000 nodes
                                user     system      total        real
-libxml-ruby search         0.010000   0.000000   0.010000 (  0.011005)
-libxml-ruby iterating      0.200000   0.010000   0.210000 (  0.217037)
-libxml-ruby search         0.010000   0.000000   0.010000 (  0.011833)
-libxml-ruby iterating      0.200000   0.020000   0.220000 (  0.223582)
-libxml-ruby search         0.010000   0.000000   0.010000 (  0.010605)
-libxml-ruby iterating      0.220000   0.010000   0.230000 (  0.228860)
+libxml-ruby search         0.010000   0.000000   0.010000 (  0.014076)
+libxml-ruby iterating      0.240000   0.020000   0.260000 (  0.275653)
+libxml-ruby search         0.010000   0.000000   0.010000 (  0.014626)
+libxml-ruby iterating      0.240000   0.030000   0.270000 (  0.285481)
+libxml-ruby search         0.010000   0.000000   0.010000 (  0.012077)
+libxml-ruby iterating      0.240000   0.040000   0.280000 (  0.283057)
+
+# 802d745c8aa734e572ba768af717decea22d615e
+                               user     system      total        real
+nokogiri search            0.020000   0.000000   0.020000 (  0.014683)
+nokogiri iterating         0.540000   0.090000   0.630000 (  0.650458)
+nokogiri search            0.020000   0.000000   0.020000 (  0.015069)
+nokogiri iterating         0.250000   0.040000   0.290000 (  0.331808)
+nokogiri search            0.010000   0.000000   0.010000 (  0.012569)
+nokogiri iterating         0.280000   0.030000   0.310000 (  0.313235)
+XPath'd 300000 nodes
+
+# moving @document-setting into decorate
+                               user     system      total        real
+nokogiri search            0.020000   0.000000   0.020000 (  0.009924)
+nokogiri iterating         0.470000   0.060000   0.530000 (  0.553306)
+nokogiri search            0.020000   0.000000   0.020000 (  0.013476)
+nokogiri iterating         0.280000   0.020000   0.300000 (  0.335385)
+nokogiri search            0.020000   0.000000   0.020000 (  0.013550)
+nokogiri iterating         0.260000   0.040000   0.300000 (  0.323867)
+XPath'd 300000 nodes
+
+# without decorate
+                               user     system      total        real
+nokogiri search            0.000000   0.000000   0.000000 (  0.009922)
+nokogiri iterating         0.460000   0.060000   0.520000 (  0.561280)
+nokogiri search            0.010000   0.000000   0.010000 (  0.012745)
+nokogiri iterating         0.300000   0.030000   0.330000 (  0.336221)
+nokogiri search            0.000000   0.000000   0.000000 (  0.011301)
+nokogiri iterating         0.270000   0.060000   0.330000 (  0.339154)
+XPath'd 300000 nodes
+
+# without setting @document
+                               user     system      total        real
+nokogiri search            0.010000   0.000000   0.010000 (  0.010570)
+nokogiri iterating         0.340000   0.070000   0.410000 (  0.436939)
+nokogiri search            0.010000   0.000000   0.010000 (  0.011028)
+nokogiri iterating         0.240000   0.040000   0.280000 (  0.303967)
+nokogiri search            0.010000   0.000000   0.010000 (  0.014206)
+nokogiri iterating         0.250000   0.050000   0.300000 (  0.353247)
+XPath'd 300000 nodes
+
+# without either decorate or @document
+                               user     system      total        real
+nokogiri search            0.020000   0.000000   0.020000 (  0.011272)
+nokogiri iterating         0.260000   0.030000   0.290000 (  0.342632)
+nokogiri search            0.020000   0.000000   0.020000 (  0.010783)
+nokogiri iterating         0.240000   0.030000   0.270000 (  0.378534)
+nokogiri search            0.010000   0.000000   0.010000 (  0.011576)
+nokogiri iterating         0.250000   0.040000   0.290000 (  0.298492)
 XPath'd 300000 nodes
