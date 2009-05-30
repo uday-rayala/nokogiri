@@ -64,3 +64,13 @@ nokogiri iterating         0.240000   0.030000   0.270000 (  0.378534)
 nokogiri search            0.010000   0.000000   0.010000 (  0.011576)
 nokogiri iterating         0.250000   0.040000   0.290000 (  0.298492)
 XPath'd 300000 nodes
+
+# when using gc_mark instead of @document
+                               user     system      total        real
+nokogiri search            0.010000   0.000000   0.010000 (  0.009501)
+nokogiri iterating         0.260000   0.030000   0.290000 (  0.284308)
+nokogiri search            0.010000   0.000000   0.010000 (  0.010851)
+nokogiri iterating         0.250000   0.080000   0.330000 (  0.319352)
+nokogiri search            0.010000   0.000000   0.010000 (  0.011643)
+nokogiri iterating         0.220000   0.050000   0.270000 (  0.266127)
+XPath'd 300000 nodes
