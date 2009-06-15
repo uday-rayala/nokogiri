@@ -845,7 +845,7 @@ VALUE Nokogiri_wrap_xml_node(VALUE klass, xmlNodePtr node)
       klass = cNokogiriXmlCData;
       break;
     case XML_DTD_NODE:
-      klass = rb_const_get(mNokogiriXml, rb_intern("DTD"));
+      klass = cNokogiriXmlDtd;
       break;
     default:
       klass = cNokogiriXmlNode;

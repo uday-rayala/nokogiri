@@ -27,6 +27,32 @@ static void element_copier(void *_payload, void *data, xmlChar *name)
 
 /*
  * call-seq:
+ *   parse_io(input, encoding)
+ *
+ * Load and parse a DTD using +input+ and +encoding+.  Don't use this,
+ * you should probably use Nokogiri::XML::DTD.parse instead.
+ */
+static VALUE parse_io(VALUE klass, VALUE input_io, VALUE encoding)
+{
+
+  xmlParserInputBufferPtr input = xmlParserInputBufferCreateIO(
+    io_read_callback,
+    io_close_callback,
+    (void *)input_io,
+    NUM2INT(encoding)
+  );
+
+  xmlDtdPtr dtd = xmlIOParseDTD(NULL, input, NUM2INT(encoding));
+
+  if(!dtd) return Qnil;
+
+  /* This is not attached to a document, so we need to do memory cleanup
+   * ourselves. */
+  return Data_Wrap_Struct(cNokogiriXmlDtd, NULL, xmlFreeDtd, dtd);
+}
+
+/*
+ * call-seq:
  *   entities
  *
  * Get a hash of the elements for this DTD.
@@ -85,6 +111,8 @@ static VALUE elements(VALUE self)
   return hash;
 }
 
+VALUE cNokogiriXmlDtd;
+
 void init_xml_dtd()
 {
   VALUE nokogiri = rb_define_module("Nokogiri");
@@ -96,7 +124,11 @@ void init_xml_dtd()
    */
   VALUE klass = rb_define_class_under(xml, "DTD", node);
 
+  cNokogiriXmlDtd = klass;
+
   rb_define_method(klass, "notations", notations, 0);
   rb_define_method(klass, "elements", elements, 0);
   rb_define_method(klass, "entities", entities, 0);
+
+  rb_define_singleton_method(klass, "parse_io", parse_io, 2);
 }

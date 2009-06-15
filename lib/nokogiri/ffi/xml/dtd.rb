@@ -1,7 +1,6 @@
 module Nokogiri
   module XML
     class DTD < Node
-      
       def elements # :nodoc:
         internal_attributes :elements
       end
