@@ -14,6 +14,30 @@ module Nokogiri
         assert_equal 44, list.length
       end
 
+      def test_parse
+        dtd = nil
+        Dir.chdir(ASSETS_DIR) do
+          dtd = Nokogiri::XML::DTD.parse(File.open('article.dtd', 'rb'))
+        end
+        assert_equal 'none', dtd.name
+      end
+
+      def test_parse_string
+        dtd = nil
+        Dir.chdir(ASSETS_DIR) do
+          dtd = Nokogiri::XML::DTD.parse(File.read('article.dtd'))
+        end
+        assert_equal 'none', dtd.name
+      end
+
+      def test_parse_class_method
+        dtd = nil
+        Dir.chdir(ASSETS_DIR) do
+          dtd = Nokogiri::XML.DTD(File.read('article.dtd'))
+        end
+        assert_equal 'none', dtd.name
+      end
+
       def test_external_subsets
         assert subset = @xml.internal_subset
         assert_equal 'staff', subset.name

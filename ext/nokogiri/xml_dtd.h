@@ -5,4 +5,6 @@
 
 void init_xml_dtd();
 
+extern VALUE cNokogiriXmlDtd;
+
 #endif
