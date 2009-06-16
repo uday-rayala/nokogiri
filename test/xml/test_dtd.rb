@@ -1,12 +1,18 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', "helper"))
 
 module Nokogiri
-  module HTML
+  module XML
     class TestDTD < Nokogiri::TestCase
       def setup
         super
         @xml = Nokogiri::XML(File.open(XML_FILE))
         assert @dtd = @xml.internal_subset
+      end
+
+      def test_parse_invalid_dtd
+        assert_raises Nokogiri::XML::SyntaxError do
+          Nokogiri::XML::DTD.parse('asdfasdf')
+        end
       end
 
       def test_parse
