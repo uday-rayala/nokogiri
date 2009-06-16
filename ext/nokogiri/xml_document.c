@@ -198,9 +198,7 @@ static VALUE read_memory( VALUE klass,
 
     xmlErrorPtr error = xmlGetLastError();
     if(error)
-      rb_funcall(rb_mKernel, rb_intern("raise"), 1,
-          Nokogiri_wrap_xml_syntax_error((VALUE)NULL, error)
-      );
+      Nokogiri_error_raise(NULL, error);
     else
       rb_raise(rb_eRuntimeError, "Could not parse document");
 
