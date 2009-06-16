@@ -14,6 +14,12 @@ module Nokogiri
         assert_equal 44, list.length
       end
 
+      def test_parse_invalid_dtd
+        assert_raises Nokogiri::XML::SyntaxError do
+          Nokogiri::XML::DTD.parse('asdfasdf')
+        end
+      end
+
       def test_parse
         dtd = nil
         Dir.chdir(ASSETS_DIR) do

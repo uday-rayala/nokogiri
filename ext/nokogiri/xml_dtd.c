@@ -42,7 +42,9 @@ static VALUE parse_io(VALUE klass, VALUE input_io, VALUE encoding)
     NUM2INT(encoding)
   );
 
+  xmlSetStructuredErrorFunc(NULL, Nokogiri_error_raise);
   xmlDtdPtr dtd = xmlIOParseDTD(NULL, input, NUM2INT(encoding));
+  xmlSetStructuredErrorFunc(NULL, NULL);
 
   if(!dtd) return Qnil;
 
