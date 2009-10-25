@@ -225,7 +225,7 @@ static VALUE subseq(VALUE self, long beg, long len)
  * count backward from the end of the +node_set+ (-1 is the last node). Returns
  * nil if the +index+ (or +start+) are out of range.
  */
-static VALUE slice(int argc, VALUE *argv, VALUE self)
+static VALUE slice(VALUE self, SEL sel, int argc, VALUE *argv)
 {
   VALUE arg ;
   long beg, len ;
@@ -381,7 +381,7 @@ void init_xml_node_set(void)
   VALUE klass     = rb_define_class_under(xml, "NodeSet", rb_cObject);
   cNokogiriXmlNodeSet = klass;
 
-  rb_define_alloc_func(klass, allocate);
+  rb_objc_define_method(*(VALUE *)klass, "alloc", allocate, 0);
   rb_objc_define_method(klass, "length", length, 0);
   rb_objc_define_method(klass, "[]", slice, -1);
   rb_objc_define_method(klass, "slice", slice, -1);

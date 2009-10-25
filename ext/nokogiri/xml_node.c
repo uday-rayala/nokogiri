@@ -404,7 +404,7 @@ static VALUE children(VALUE self, SEL sel)
   }
 
   VALUE node_set = Nokogiri_wrap_xml_node_set(set);
-  rb_iv_set(node_set, "@document", DOC_RUBY_OBJECT(node->doc));
+  rb_ivar_set(node_set, "@document", DOC_RUBY_OBJECT(node->doc));
 
   return node_set;
 }
