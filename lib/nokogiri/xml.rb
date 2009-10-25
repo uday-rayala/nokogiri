@@ -29,7 +29,7 @@ module Nokogiri
   class << self
     ###
     # Parse XML.  Convenience method for Nokogiri::XML::Document.parse
-    def XML thing, url = nil, encoding = nil, options = XML::ParseOptions::DEFAULT_XML, &block
+    def XML thing, url = nil, encoding = nil, options = Nokogiri::XML::ParseOptions::DEFAULT_XML, &block
       Nokogiri::XML::Document.parse(thing, url, encoding, options, &block)
     end
   end

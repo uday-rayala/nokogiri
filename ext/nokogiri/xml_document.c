@@ -66,7 +66,7 @@ static VALUE url(VALUE self)
  *
  * Set the root element on this document
  */
-static VALUE set_root(VALUE self, VALUE root)
+static VALUE set_root(VALUE self, SEL sel, VALUE root)
 {
   xmlDocPtr doc;
   xmlNodePtr new_root;
@@ -96,7 +96,7 @@ static VALUE set_root(VALUE self, VALUE root)
  *
  * Get the root node for this document.
  */
-static VALUE root(VALUE self)
+static VALUE root(VALUE self, SEL sel)
 {
   xmlDocPtr doc;
   Data_Get_Struct(self, xmlDoc, doc);
@@ -160,6 +160,7 @@ static VALUE version(VALUE self)
  * Create a new document from an IO object
  */
 static VALUE read_io( VALUE klass,
+                      SEL sel,
                       VALUE io,
                       VALUE url,
                       VALUE encoding,
@@ -206,6 +207,7 @@ static VALUE read_io( VALUE klass,
  * Create a new document from a String
  */
 static VALUE read_memory( VALUE klass,
+                          SEL sel,
                           VALUE string,
                           VALUE url,
                           VALUE encoding,
@@ -269,7 +271,7 @@ static VALUE duplicate_node(int argc, VALUE *argv, VALUE self)
  *
  * Create a new document with +version+ (defaults to "1.0")
  */
-static VALUE new(int argc, VALUE *argv, VALUE klass)
+static VALUE new(VALUE klass, SEL sel, int argc, VALUE *argv)
 {
   VALUE version, rest, rb_doc ;
 
@@ -345,18 +347,18 @@ void init_xml_document()
 
   cNokogiriXmlDocument = klass;
 
-  rb_define_singleton_method(klass, "read_memory", read_memory, 4);
-  rb_define_singleton_method(klass, "read_io", read_io, 4);
-  rb_define_singleton_method(klass, "new", new, -1);
+  rb_objc_define_method(*(VALUE *)klass, "read_memory", read_memory, 4);
+  rb_objc_define_method(*(VALUE *)klass, "read_io", read_io, 4);
+  rb_objc_define_method(*(VALUE *)klass, "new", new, -1);
 
-  rb_define_method(klass, "root", root, 0);
-  rb_define_method(klass, "root=", set_root, 1);
-  rb_define_method(klass, "encoding", encoding, 0);
-  rb_define_method(klass, "encoding=", set_encoding, 1);
-  rb_define_method(klass, "version", version, 0);
-  rb_define_method(klass, "dup", duplicate_node, -1);
-  rb_define_method(klass, "url", url, 0);
-  rb_define_method(klass, "remove_namespaces!", remove_namespaces_bang, 0);
+  rb_objc_define_method(klass, "root", root, 0);
+  rb_objc_define_method(klass, "root=", set_root, 1);
+  rb_objc_define_method(klass, "encoding", encoding, 0);
+  rb_objc_define_method(klass, "encoding=", set_encoding, 1);
+  rb_objc_define_method(klass, "version", version, 0);
+  rb_objc_define_method(klass, "dup", duplicate_node, -1);
+  rb_objc_define_method(klass, "url", url, 0);
+  rb_objc_define_method(klass, "remove_namespaces!", remove_namespaces_bang, 0);
 }
 
 

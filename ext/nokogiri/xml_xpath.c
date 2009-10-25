@@ -18,7 +18,7 @@ VALUE Nokogiri_wrap_xml_xpath(xmlXPathObjectPtr xpath)
  *
  * Fetch the node set associated with this xpath context.
  */
-static VALUE node_set(VALUE self)
+static VALUE node_set(VALUE self, SEL sel)
 {
   xmlXPathObjectPtr xpath;
   Data_Get_Struct(self, xmlXPathObject, xpath);
@@ -49,5 +49,5 @@ void init_xml_xpath(void)
   VALUE klass = rb_define_class_under(xml, "XPath", rb_cObject);
 
   cNokogiriXmlXpath = klass;
-  rb_define_method(klass, "node_set", node_set, 0);
+  rb_objc_define_method(klass, "node_set", node_set, 0);
 }

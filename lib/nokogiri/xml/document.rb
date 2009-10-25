@@ -88,6 +88,7 @@ module Nokogiri
       ###
       # Apply any decorators to +node+
       def decorate node
+        puts "INTERNET!"
         return unless @decorators
         @decorators.each { |klass,list|
           next unless node.is_a?(klass)

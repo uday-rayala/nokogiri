@@ -7,7 +7,7 @@
  *
  * Duplicate this node set
  */
-static VALUE duplicate(VALUE self)
+static VALUE duplicate(VALUE self, SEL sel)
 {
   xmlNodeSetPtr node_set;
   Data_Get_Struct(self, xmlNodeSet, node_set);
@@ -23,7 +23,7 @@ static VALUE duplicate(VALUE self)
  *
  * Get the length of the node set
  */
-static VALUE length(VALUE self)
+static VALUE length(VALUE self, SEL sel)
 {
   xmlNodeSetPtr node_set;
   Data_Get_Struct(self, xmlNodeSet, node_set);
@@ -40,7 +40,7 @@ static VALUE length(VALUE self)
  *
  * Append +node+ to the NodeSet.
  */
-static VALUE push(VALUE self, VALUE rb_node)
+static VALUE push(VALUE self, SEL sel, VALUE rb_node)
 {
   xmlNodeSetPtr node_set;
   xmlNodePtr node;
@@ -61,7 +61,7 @@ static VALUE push(VALUE self, VALUE rb_node)
  *  Delete +node+ from the Nodeset, if it is a member. Returns the deleted node
  *  if found, otherwise returns nil.
  */
-static VALUE delete(VALUE self, VALUE rb_node)
+static VALUE delete(VALUE self, SEL sel, VALUE rb_node)
 {
   xmlNodeSetPtr node_set ;
   xmlNodePtr node ;
@@ -87,7 +87,7 @@ static VALUE delete(VALUE self, VALUE rb_node)
  *
  * Set Intersection — Returns a new NodeSet containing nodes common to the two NodeSets.
  */
-static VALUE intersection(VALUE self, VALUE rb_other)
+static VALUE intersection(VALUE self, SEL sel, VALUE rb_other)
 {
   xmlNodeSetPtr node_set;
   xmlNodeSetPtr other;
@@ -108,7 +108,7 @@ static VALUE intersection(VALUE self, VALUE rb_other)
  *
  *  Returns true if any member of node set equals +node+.
  */
-static VALUE include_eh(VALUE self, VALUE rb_node)
+static VALUE include_eh(VALUE self, SEL sel, VALUE rb_node)
 {
   xmlNodeSetPtr node_set;
   xmlNodePtr node;
@@ -130,7 +130,7 @@ static VALUE include_eh(VALUE self, VALUE rb_node)
  * Returns a new set built by merging the set and the elements of the given
  * set.
  */
-static VALUE set_union(VALUE self, VALUE rb_other)
+static VALUE set_union(VALUE self, SEL sel, VALUE rb_other)
 {
   xmlNodeSetPtr node_set;
   xmlNodeSetPtr other;
@@ -159,7 +159,7 @@ static VALUE set_union(VALUE self, VALUE rb_other)
  *  Difference - returns a new NodeSet that is a copy of this NodeSet, removing
  *  each item that also appears in +node_set+
  */
-static VALUE minus(VALUE self, VALUE rb_other)
+static VALUE minus(VALUE self, SEL sel, VALUE rb_other)
 {
   xmlNodeSetPtr node_set;
   xmlNodeSetPtr other;
@@ -272,7 +272,7 @@ static VALUE slice(int argc, VALUE *argv, VALUE self)
  *
  * Return this list as an Array
  */
-static VALUE to_array(VALUE self, VALUE rb_node)
+static VALUE to_array(VALUE self, SEL sel, VALUE rb_node)
 {
   xmlNodeSetPtr set;
   Data_Get_Struct(self, xmlNodeSet, set);
@@ -305,7 +305,7 @@ static VALUE to_array(VALUE self, VALUE rb_node)
  *
  * Unlink this NodeSet and all Node objects it contains from their current context.
  */
-static VALUE unlink_nodeset(VALUE self)
+static VALUE unlink_nodeset(VALUE self, SEL sel)
 {
   xmlNodeSetPtr node_set;
   int j, nodeNr ;
@@ -382,16 +382,16 @@ void init_xml_node_set(void)
   cNokogiriXmlNodeSet = klass;
 
   rb_define_alloc_func(klass, allocate);
-  rb_define_method(klass, "length", length, 0);
-  rb_define_method(klass, "[]", slice, -1);
-  rb_define_method(klass, "slice", slice, -1);
-  rb_define_method(klass, "push", push, 1);
-  rb_define_method(klass, "|", set_union, 1);
-  rb_define_method(klass, "-", minus, 1);
-  rb_define_method(klass, "unlink", unlink_nodeset, 0);
-  rb_define_method(klass, "to_a", to_array, 0);
-  rb_define_method(klass, "dup", duplicate, 0);
-  rb_define_method(klass, "delete", delete, 1);
-  rb_define_method(klass, "&", intersection, 1);
-  rb_define_method(klass, "include?", include_eh, 1);
+  rb_objc_define_method(klass, "length", length, 0);
+  rb_objc_define_method(klass, "[]", slice, -1);
+  rb_objc_define_method(klass, "slice", slice, -1);
+  rb_objc_define_method(klass, "push", push, 1);
+  rb_objc_define_method(klass, "|", set_union, 1);
+  rb_objc_define_method(klass, "-", minus, 1);
+  rb_objc_define_method(klass, "unlink", unlink_nodeset, 0);
+  rb_objc_define_method(klass, "to_a", to_array, 0);
+  rb_objc_define_method(klass, "dup", duplicate, 0);
+  rb_objc_define_method(klass, "delete", delete, 1);
+  rb_objc_define_method(klass, "&", intersection, 1);
+  rb_objc_define_method(klass, "include?", include_eh, 1);
 }

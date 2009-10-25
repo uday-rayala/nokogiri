@@ -136,7 +136,7 @@ static VALUE reparent_node_with(VALUE node_obj, VALUE other_obj, node_other_func
  *
  * Get the document for this Node
  */
-static VALUE document(VALUE self)
+static VALUE document(VALUE self, SEL sel)
 {
   xmlNodePtr node;
   Data_Get_Struct(self, xmlNode, node);
@@ -149,7 +149,7 @@ static VALUE document(VALUE self)
  *
  * Get the internal pointer number
  */
-static VALUE pointer_id(VALUE self)
+static VALUE pointer_id(VALUE self, SEL sel)
 {
   xmlNodePtr node;
   Data_Get_Struct(self, xmlNode, node);
@@ -163,7 +163,7 @@ static VALUE pointer_id(VALUE self)
  *
  * Encode any special characters in +string+
  */
-static VALUE encode_special_chars(VALUE self, VALUE string)
+static VALUE encode_special_chars(VALUE self, SEL sel, VALUE string)
 {
   xmlNodePtr node;
   Data_Get_Struct(self, xmlNode, node);
@@ -184,7 +184,7 @@ static VALUE encode_special_chars(VALUE self, VALUE string)
  *
  * Create an internal subset
  */
-static VALUE create_internal_subset(VALUE self, VALUE name, VALUE external_id, VALUE system_id)
+static VALUE create_internal_subset(VALUE self, SEL sel, VALUE name, VALUE external_id, VALUE system_id)
 {
   xmlNodePtr node;
   xmlDocPtr doc;
@@ -213,7 +213,7 @@ static VALUE create_internal_subset(VALUE self, VALUE name, VALUE external_id, V
  *
  * Create an external subset
  */
-static VALUE create_external_subset(VALUE self, VALUE name, VALUE external_id, VALUE system_id)
+static VALUE create_external_subset(VALUE self, SEL sel, VALUE name, VALUE external_id, VALUE system_id)
 {
   xmlNodePtr node;
   xmlDocPtr doc;
@@ -242,7 +242,7 @@ static VALUE create_external_subset(VALUE self, VALUE name, VALUE external_id, V
  *
  * Get the external subset
  */
-static VALUE external_subset(VALUE self)
+static VALUE external_subset(VALUE self, SEL sel)
 {
   xmlNodePtr node;
   xmlDocPtr doc;
@@ -264,7 +264,7 @@ static VALUE external_subset(VALUE self)
  *
  * Get the internal subset
  */
-static VALUE internal_subset(VALUE self)
+static VALUE internal_subset(VALUE self, SEL sel)
 {
   xmlNodePtr node;
   xmlDocPtr doc;
@@ -309,7 +309,7 @@ static VALUE duplicate_node(int argc, VALUE *argv, VALUE self)
  *
  * Unlink this node from its current context.
  */
-static VALUE unlink_node(VALUE self)
+static VALUE unlink_node(VALUE self, SEL sel)
 {
   xmlNodePtr node;
   Data_Get_Struct(self, xmlNode, node);
@@ -324,7 +324,7 @@ static VALUE unlink_node(VALUE self)
  *
  * Is this node blank?
  */
-static VALUE blank_eh(VALUE self)
+static VALUE blank_eh(VALUE self, SEL sel)
 {
   xmlNodePtr node;
   Data_Get_Struct(self, xmlNode, node);
@@ -339,7 +339,7 @@ static VALUE blank_eh(VALUE self)
  *
  * Returns the next sibling node
  */
-static VALUE next_sibling(VALUE self)
+static VALUE next_sibling(VALUE self, SEL sel)
 {
   xmlNodePtr node, sibling;
   Data_Get_Struct(self, xmlNode, node);
@@ -356,7 +356,7 @@ static VALUE next_sibling(VALUE self)
  *
  * Returns the previous sibling node
  */
-static VALUE previous_sibling(VALUE self)
+static VALUE previous_sibling(VALUE self, SEL sel)
 {
   xmlNodePtr node, sibling;
   Data_Get_Struct(self, xmlNode, node);
@@ -368,7 +368,7 @@ static VALUE previous_sibling(VALUE self)
 }
 
 /* :nodoc: */
-static VALUE replace(VALUE self, VALUE _new_node)
+static VALUE replace(VALUE self, SEL sel, VALUE _new_node)
 {
   xmlNodePtr node, new_node;
   Data_Get_Struct(self, xmlNode, node);
@@ -387,7 +387,7 @@ static VALUE replace(VALUE self, VALUE _new_node)
  *
  * Get the list of children for this node as a NodeSet
  */
-static VALUE children(VALUE self)
+static VALUE children(VALUE self, SEL sel)
 {
   xmlNodePtr node;
   Data_Get_Struct(self, xmlNode, node);
@@ -415,7 +415,7 @@ static VALUE children(VALUE self)
  *
  * Returns the child node
  */
-static VALUE child(VALUE self)
+static VALUE child(VALUE self, SEL sel)
 {
   xmlNodePtr node, child;
   Data_Get_Struct(self, xmlNode, node);
@@ -432,7 +432,7 @@ static VALUE child(VALUE self)
  *
  * Returns true if +attribute+ is set
  */
-static VALUE key_eh(VALUE self, VALUE attribute)
+static VALUE key_eh(VALUE self, SEL sel, VALUE attribute)
 {
   xmlNodePtr node;
   Data_Get_Struct(self, xmlNode, node);
@@ -447,7 +447,7 @@ static VALUE key_eh(VALUE self, VALUE attribute)
  *
  * Returns true if +attribute+ is set with +namespace+
  */
-static VALUE namespaced_key_eh(VALUE self, VALUE attribute, VALUE namespace)
+static VALUE namespaced_key_eh(VALUE self, SEL sel, VALUE attribute, VALUE namespace)
 {
   xmlNodePtr node;
   Data_Get_Struct(self, xmlNode, node);
@@ -463,7 +463,7 @@ static VALUE namespaced_key_eh(VALUE self, VALUE attribute, VALUE namespace)
  *
  * Set the +property+ to +value+
  */
-static VALUE set(VALUE self, VALUE property, VALUE value)
+static VALUE set(VALUE self, SEL sel, VALUE property, VALUE value)
 {
   xmlNodePtr node;
   Data_Get_Struct(self, xmlNode, node);
@@ -480,7 +480,7 @@ static VALUE set(VALUE self, VALUE property, VALUE value)
  *
  * Get the value for +attribute+
  */
-static VALUE get(VALUE self, VALUE attribute)
+static VALUE get(VALUE self, SEL sel, VALUE attribute)
 {
   xmlNodePtr node;
   xmlChar* propstr ;
@@ -505,7 +505,7 @@ static VALUE get(VALUE self, VALUE attribute)
  *
  * Set the namespace to +namespace+
  */
-static VALUE set_namespace(VALUE self, VALUE namespace)
+static VALUE set_namespace(VALUE self, SEL sel, VALUE namespace)
 {
   xmlNodePtr node;
   xmlNsPtr ns;
@@ -524,7 +524,7 @@ static VALUE set_namespace(VALUE self, VALUE namespace)
  *
  * Get the attribute node with +name+
  */
-static VALUE attr(VALUE self, VALUE name)
+static VALUE attr(VALUE self, SEL sel, VALUE name)
 {
   xmlNodePtr node;
   xmlAttrPtr prop;
@@ -541,7 +541,7 @@ static VALUE attr(VALUE self, VALUE name)
  *
  * Get the attribute node with +name+ and +namespace+
  */
-static VALUE attribute_with_ns(VALUE self, VALUE name, VALUE namespace)
+static VALUE attribute_with_ns(VALUE self, SEL sel, VALUE name, VALUE namespace)
 {
   xmlNodePtr node;
   xmlAttrPtr prop;
@@ -559,7 +559,7 @@ static VALUE attribute_with_ns(VALUE self, VALUE name, VALUE namespace)
  *
  *  returns a list containing the Node attributes.
  */
-static VALUE attribute_nodes(VALUE self)
+static VALUE attribute_nodes(VALUE self, SEL sel)
 {
     /* this code in the mode of xmlHasProp() */
     xmlNodePtr node;
@@ -579,7 +579,7 @@ static VALUE attribute_nodes(VALUE self)
  *
  *  returns the Nokogiri::XML::Namespace for the node, if one exists.
  */
-static VALUE namespace(VALUE self)
+static VALUE namespace(VALUE self, SEL sel)
 {
   xmlNodePtr node ;
   Data_Get_Struct(self, xmlNode, node);
@@ -596,7 +596,7 @@ static VALUE namespace(VALUE self)
  *
  *  returns a list of Namespace nodes defined on _self_
  */
-static VALUE namespace_definitions(VALUE self)
+static VALUE namespace_definitions(VALUE self, SEL sel)
 {
   /* this code in the mode of xmlHasProp() */
   xmlNodePtr node ;
@@ -623,7 +623,7 @@ static VALUE namespace_definitions(VALUE self)
  *
  * Get the type for this Node
  */
-static VALUE node_type(VALUE self)
+static VALUE node_type(VALUE self, SEL sel)
 {
   xmlNodePtr node;
   Data_Get_Struct(self, xmlNode, node);
@@ -636,7 +636,7 @@ static VALUE node_type(VALUE self)
  *
  * Set the content for this Node
  */
-static VALUE set_content(VALUE self, VALUE content)
+static VALUE set_content(VALUE self, SEL sel, VALUE content)
 {
   xmlNodePtr node;
   Data_Get_Struct(self, xmlNode, node);
@@ -650,7 +650,7 @@ static VALUE set_content(VALUE self, VALUE content)
  *
  * Returns the content for this Node
  */
-static VALUE get_content(VALUE self)
+static VALUE get_content(VALUE self, SEL sel)
 {
   xmlNodePtr node;
   Data_Get_Struct(self, xmlNode, node);
@@ -670,7 +670,7 @@ static VALUE get_content(VALUE self)
  *
  * Add +node+ as a child of this node. Returns the new child node.
  */
-static VALUE add_child(VALUE self, VALUE child)
+static VALUE add_child(VALUE self, SEL sel, VALUE child)
 {
   return reparent_node_with(child, self, xmlAddChild);
 }
@@ -681,7 +681,7 @@ static VALUE add_child(VALUE self, VALUE child)
  *
  * Get the parent Node for this Node
  */
-static VALUE get_parent(VALUE self)
+static VALUE get_parent(VALUE self, SEL sel)
 {
   xmlNodePtr node, parent;
   Data_Get_Struct(self, xmlNode, node);
@@ -698,7 +698,7 @@ static VALUE get_parent(VALUE self)
  *
  * Set the name for this Node
  */
-static VALUE set_name(VALUE self, VALUE new_name)
+static VALUE set_name(VALUE self, SEL sel, VALUE new_name)
 {
   xmlNodePtr node;
   Data_Get_Struct(self, xmlNode, node);
@@ -712,7 +712,7 @@ static VALUE set_name(VALUE self, VALUE new_name)
  *
  * Returns the name for this Node
  */
-static VALUE get_name(VALUE self)
+static VALUE get_name(VALUE self, SEL sel)
 {
   xmlNodePtr node;
   Data_Get_Struct(self, xmlNode, node);
@@ -727,7 +727,7 @@ static VALUE get_name(VALUE self)
  *
  * Returns the path associated with this Node
  */
-static VALUE path(VALUE self)
+static VALUE path(VALUE self, SEL sel)
 {
   xmlNodePtr node;
   xmlChar *path ;
@@ -745,7 +745,7 @@ static VALUE path(VALUE self)
  *
  *  Insert +node+ after this node (as a sibling).
  */
-static VALUE add_next_sibling(VALUE self, VALUE rb_node)
+static VALUE add_next_sibling(VALUE self, SEL sel, VALUE rb_node)
 {
   return reparent_node_with(rb_node, self, xmlAddNextSibling) ;
 }
@@ -756,7 +756,7 @@ static VALUE add_next_sibling(VALUE self, VALUE rb_node)
  *
  * Insert +node+ before this node (as a sibling).
  */
-static VALUE add_previous_sibling(VALUE self, VALUE rb_node)
+static VALUE add_previous_sibling(VALUE self, SEL sel, VALUE rb_node)
 {
   return reparent_node_with(rb_node, self, xmlAddPrevSibling) ;
 }
@@ -805,7 +805,7 @@ static VALUE native_write_to(
  *
  * Returns the line for this Node
  */
-static VALUE line(VALUE self)
+static VALUE line(VALUE self, SEL sel)
 {
   xmlNodePtr node;
   Data_Get_Struct(self, xmlNode, node);
@@ -819,7 +819,7 @@ static VALUE line(VALUE self)
  *
  * Adds a namespace definition with +prefix+ using +href+
  */
-static VALUE add_namespace_definition(VALUE self, VALUE prefix, VALUE href)
+static VALUE add_namespace_definition(VALUE self, SEL sel, VALUE prefix, VALUE href)
 {
   xmlNodePtr node;
   Data_Get_Struct(self, xmlNode, node);
@@ -850,7 +850,7 @@ static VALUE add_namespace_definition(VALUE self, VALUE prefix, VALUE href)
  *
  * Create a new node with +name+ sharing GC lifecycle with +document+
  */
-static VALUE new(int argc, VALUE *argv, VALUE klass)
+static VALUE new(VALUE klass, SEL sel, int argc, VALUE *argv)
 {
   xmlDocPtr doc;
   VALUE name;
@@ -882,7 +882,7 @@ static VALUE new(int argc, VALUE *argv, VALUE klass)
  *
  * Returns the Node as html.
  */
-static VALUE dump_html(VALUE self)
+static VALUE dump_html(VALUE self, SEL sel)
 {
   xmlBufferPtr buf ;
   xmlNodePtr node ;
@@ -901,7 +901,7 @@ static VALUE dump_html(VALUE self)
  *
  * Compare this Node to +other+ with respect to their Document
  */
-static VALUE compare(VALUE self, VALUE _other)
+static VALUE compare(VALUE self, SEL sel, VALUE _other)
 {
   xmlNodePtr node, other;
   Data_Get_Struct(self, xmlNode, node);
@@ -978,7 +978,8 @@ VALUE Nokogiri_wrap_xml_node(VALUE klass, xmlNodePtr node)
     document = DOC_RUBY_OBJECT(node->doc);
     node_cache = DOC_NODE_CACHE(node->doc);
     rb_ary_push(node_cache, rb_node);
-    rb_funcall(document, decorate, 1, rb_node);
+    /* For some reason, this makes macruby segv */
+    // rb_funcall(document, decorate, 1, rb_node);
   }
 
   return rb_node ;
@@ -1008,49 +1009,49 @@ void init_xml_node()
 
   cNokogiriXmlElement = rb_define_class_under(xml, "Element", klass);
 
-  rb_define_singleton_method(klass, "new", new, -1);
+  rb_objc_define_method(*(VALUE *)klass, "new", new, -1);
 
-  rb_define_method(klass, "add_namespace_definition", add_namespace_definition, 2);
-  rb_define_method(klass, "node_name", get_name, 0);
-  rb_define_method(klass, "document", document, 0);
-  rb_define_method(klass, "node_name=", set_name, 1);
-  rb_define_method(klass, "add_child", add_child, 1);
-  rb_define_method(klass, "parent", get_parent, 0);
-  rb_define_method(klass, "child", child, 0);
-  rb_define_method(klass, "children", children, 0);
-  rb_define_method(klass, "next_sibling", next_sibling, 0);
-  rb_define_method(klass, "previous_sibling", previous_sibling, 0);
-  rb_define_method(klass, "node_type", node_type, 0);
-  rb_define_method(klass, "content", get_content, 0);
-  rb_define_method(klass, "path", path, 0);
-  rb_define_method(klass, "key?", key_eh, 1);
-  rb_define_method(klass, "namespaced_key?", namespaced_key_eh, 2);
-  rb_define_method(klass, "blank?", blank_eh, 0);
-  rb_define_method(klass, "[]=", set, 2);
-  rb_define_method(klass, "attribute_nodes", attribute_nodes, 0);
-  rb_define_method(klass, "attribute", attr, 1);
-  rb_define_method(klass, "attribute_with_ns", attribute_with_ns, 2);
-  rb_define_method(klass, "namespace", namespace, 0);
-  rb_define_method(klass, "namespace_definitions", namespace_definitions, 0);
-  rb_define_method(klass, "add_previous_sibling", add_previous_sibling, 1);
-  rb_define_method(klass, "add_next_sibling", add_next_sibling, 1);
-  rb_define_method(klass, "encode_special_chars", encode_special_chars, 1);
-  rb_define_method(klass, "dup", duplicate_node, -1);
-  rb_define_method(klass, "unlink", unlink_node, 0);
-  rb_define_method(klass, "internal_subset", internal_subset, 0);
-  rb_define_method(klass, "external_subset", external_subset, 0);
-  rb_define_method(klass, "create_internal_subset", create_internal_subset, 3);
-  rb_define_method(klass, "create_external_subset", create_external_subset, 3);
-  rb_define_method(klass, "pointer_id", pointer_id, 0);
-  rb_define_method(klass, "line", line, 0);
+  rb_objc_define_method(klass, "add_namespace_definition", add_namespace_definition, 2);
+  rb_objc_define_method(klass, "node_name", get_name, 0);
+  rb_objc_define_method(klass, "document", document, 0);
+  rb_objc_define_method(klass, "node_name=", set_name, 1);
+  rb_objc_define_method(klass, "add_child", add_child, 1);
+  rb_objc_define_method(klass, "parent", get_parent, 0);
+  rb_objc_define_method(klass, "child", child, 0);
+  rb_objc_define_method(klass, "children", children, 0);
+  rb_objc_define_method(klass, "next_sibling", next_sibling, 0);
+  rb_objc_define_method(klass, "previous_sibling", previous_sibling, 0);
+  rb_objc_define_method(klass, "node_type", node_type, 0);
+  rb_objc_define_method(klass, "content", get_content, 0);
+  rb_objc_define_method(klass, "path", path, 0);
+  rb_objc_define_method(klass, "key?", key_eh, 1);
+  rb_objc_define_method(klass, "namespaced_key?", namespaced_key_eh, 2);
+  rb_objc_define_method(klass, "blank?", blank_eh, 0);
+  rb_objc_define_method(klass, "[]=", set, 2);
+  rb_objc_define_method(klass, "attribute_nodes", attribute_nodes, 0);
+  rb_objc_define_method(klass, "attribute", attr, 1);
+  rb_objc_define_method(klass, "attribute_with_ns", attribute_with_ns, 2);
+  rb_objc_define_method(klass, "namespace", namespace, 0);
+  rb_objc_define_method(klass, "namespace_definitions", namespace_definitions, 0);
+  rb_objc_define_method(klass, "add_previous_sibling", add_previous_sibling, 1);
+  rb_objc_define_method(klass, "add_next_sibling", add_next_sibling, 1);
+  rb_objc_define_method(klass, "encode_special_chars", encode_special_chars, 1);
+  rb_objc_define_method(klass, "dup", duplicate_node, -1);
+  rb_objc_define_method(klass, "unlink", unlink_node, 0);
+  rb_objc_define_method(klass, "internal_subset", internal_subset, 0);
+  rb_objc_define_method(klass, "external_subset", external_subset, 0);
+  rb_objc_define_method(klass, "create_internal_subset", create_internal_subset, 3);
+  rb_objc_define_method(klass, "create_external_subset", create_external_subset, 3);
+  rb_objc_define_method(klass, "pointer_id", pointer_id, 0);
+  rb_objc_define_method(klass, "line", line, 0);
 
-  rb_define_private_method(klass, "dump_html", dump_html, 0);
-  rb_define_private_method(klass, "native_write_to", native_write_to, 4);
-  rb_define_private_method(klass, "replace_with_node", replace, 1);
-  rb_define_private_method(klass, "native_content=", set_content, 1);
-  rb_define_private_method(klass, "get", get, 1);
-  rb_define_private_method(klass, "set_namespace", set_namespace, 1);
-  rb_define_private_method(klass, "compare", compare, 1);
+  rb_objc_define_method(klass, "dump_html", dump_html, 0);
+  rb_objc_define_method(klass, "native_write_to", native_write_to, 4);
+  rb_objc_define_method(klass, "replace_with_node", replace, 1);
+  rb_objc_define_method(klass, "native_content=", set_content, 1);
+  rb_objc_define_method(klass, "get", get, 1);
+  rb_objc_define_method(klass, "set_namespace", set_namespace, 1);
+  rb_objc_define_method(klass, "compare", compare, 1);
 
   decorate = rb_intern("decorate");
   decorate_bang = rb_intern("decorate!");

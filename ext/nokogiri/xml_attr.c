@@ -6,7 +6,7 @@
  *
  * Set the value for this Attr to +content+
  */
-static VALUE set_value(VALUE self, VALUE content)
+static VALUE set_value(VALUE self, SEL sel, VALUE content)
 {
   xmlAttrPtr attr;
   Data_Get_Struct(self, xmlAttr, attr);
@@ -46,7 +46,7 @@ static VALUE set_value(VALUE self, VALUE content)
  *
  * Create a new Attr element on the +document+ with +name+
  */
-static VALUE new(int argc, VALUE *argv, VALUE klass)
+static VALUE new(VALUE klass, SEL sel, int argc, VALUE *argv)
 {
   xmlDocPtr xml_doc;
   VALUE document;
@@ -87,6 +87,6 @@ void init_xml_attr()
 
   cNokogiriXmlAttr = klass;
 
-  rb_define_singleton_method(klass, "new", new, -1);
-  rb_define_method(klass, "value=", set_value, 1);
+  rb_objc_define_method(*(VALUE *)klass, "new", new, -1);
+  rb_objc_define_method(klass, "value=", set_value, 1);
 }
