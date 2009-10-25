@@ -147,7 +147,7 @@ static VALUE set_union(VALUE self, SEL sel, VALUE rb_other)
 
   VALUE new_set = Nokogiri_wrap_xml_node_set(new);
 
-  rb_iv_set(new_set, "@document", rb_iv_get(self, "@document"));
+  rb_ivar_set(new_set, "@document", rb_ivar_get(self, "@document"));
 
   return new_set;
 }

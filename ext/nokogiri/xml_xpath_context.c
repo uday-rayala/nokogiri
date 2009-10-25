@@ -13,7 +13,7 @@ static void deallocate(xmlXPathContextPtr ctx)
  *
  * Register the namespace with +prefix+ and +uri+.
  */
-static VALUE register_ns(VALUE self, VALUE prefix, VALUE uri)
+static VALUE register_ns(VALUE self, SEL sel, VALUE prefix, VALUE uri)
 {
   xmlXPathContextPtr ctx;
   Data_Get_Struct(self, xmlXPathContext, ctx);
@@ -151,7 +151,7 @@ static void xpath_generic_exception_handler(void * ctx, const char *msg, ...)
  *
  * Evaluate the +search_path+ returning an XML::XPath object.
  */
-static VALUE evaluate(int argc, VALUE *argv, VALUE self)
+static VALUE evaluate(VALUE self, SEL sel, int argc, VALUE *argv)
 {
   VALUE search_path, xpath_handler;
   xmlXPathContextPtr ctx;
@@ -192,7 +192,7 @@ static VALUE evaluate(int argc, VALUE *argv, VALUE self)
   assert(ctx->doc);
   assert(DOC_RUBY_OBJECT_TEST(ctx->doc));
 
-  rb_iv_set(xpath_object, "@document", DOC_RUBY_OBJECT(ctx->doc));
+  rb_ivar_set(xpath_object, "@document", DOC_RUBY_OBJECT(ctx->doc));
   return xpath_object;
 }
 
@@ -202,7 +202,7 @@ static VALUE evaluate(int argc, VALUE *argv, VALUE self)
  *
  * Create a new XPathContext with +node+ as the reference point.
  */
-static VALUE new(VALUE klass, VALUE nodeobj)
+static VALUE new(VALUE klass, SEL sel, VALUE nodeobj)
 {
   xmlXPathInit();
 
@@ -212,7 +212,7 @@ static VALUE new(VALUE klass, VALUE nodeobj)
   xmlXPathContextPtr ctx = xmlXPathNewContext(node->doc);
   ctx->node = node;
   VALUE self = Data_Wrap_Struct(klass, 0, deallocate, ctx);
-  //rb_iv_set(self, "@xpath_handler", Qnil);
+  rb_ivar_set(self, "@xpath_handler", Qnil);
   return self;
 }
 
@@ -233,7 +233,7 @@ void init_xml_xpath_context(void)
 
   cNokogiriXmlXpathContext = klass;
 
-  rb_define_singleton_method(klass, "new", new, 1);
-  rb_define_method(klass, "evaluate", evaluate, -1);
-  rb_define_method(klass, "register_ns", register_ns, 2);
+  rb_objc_define_method(*(VALUE *)klass, "new", new, 1);
+  rb_objc_define_method(klass, "evaluate", evaluate, -1);
+  rb_objc_define_method(klass, "register_ns", register_ns, 2);
 }

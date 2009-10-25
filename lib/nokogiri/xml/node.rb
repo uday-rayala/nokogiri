@@ -140,8 +140,9 @@ module Nokogiri
           ctx = XPathContext.new(self)
           ctx.register_namespaces(ns)
           set = ctx.evaluate(path, handler).node_set
-          set.document = document
-          document.decorate(set)
+          # FIXME: calling these methods seems to make MacRuby segv
+          #set.document = document
+          #document.decorate(set)
           set
         }
         return sets.first if sets.length == 1

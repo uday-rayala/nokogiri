@@ -769,6 +769,7 @@ static VALUE add_previous_sibling(VALUE self, SEL sel, VALUE rb_node)
  */
 static VALUE native_write_to(
     VALUE self,
+    SEL sel,
     VALUE io,
     VALUE encoding,
     VALUE indent_string,

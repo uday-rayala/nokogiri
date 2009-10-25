@@ -31,7 +31,7 @@ static VALUE node_set(VALUE self, SEL sel)
   if(NIL_P(node_set))
     node_set = Nokogiri_wrap_xml_node_set(xmlXPathNodeSetCreate(NULL));
 
-  rb_funcall(node_set, rb_intern("document="), 1, rb_iv_get(self, "@document"));
+  rb_ivar_set(node_set, "@document" ,rb_ivar_get(self, "@document"));
 
   return node_set;
 }
