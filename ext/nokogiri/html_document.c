@@ -67,7 +67,7 @@ static VALUE read_io( VALUE klass,
   }
 
   VALUE document = Nokogiri_wrap_xml_document(klass, doc);
-  rb_iv_set(document, "@errors", error_list);
+  rb_ivar_set(document, "@errors", error_list);
   return document;
 }
 

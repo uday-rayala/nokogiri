@@ -16,7 +16,7 @@ static VALUE prefix(VALUE self, SEL sel)
   Data_Get_Struct(self, xmlNs, ns);
   if(!ns->prefix) return Qnil;
 
-  Data_Get_Struct(rb_iv_get(self, "@document"), xmlDoc, doc);
+  Data_Get_Struct(rb_ivar_get(self, "@document"), xmlDoc, doc);
 
   return NOKOGIRI_STR_NEW2(ns->prefix);
 }
@@ -35,7 +35,7 @@ static VALUE href(VALUE self, SEL sel)
   Data_Get_Struct(self, xmlNs, ns);
   if(!ns->href) return Qnil;
 
-  Data_Get_Struct(rb_iv_get(self, "@document"), xmlDoc, doc);
+  Data_Get_Struct(rb_ivar_get(self, "@document"), xmlDoc, doc);
 
   return NOKOGIRI_STR_NEW2(ns->href);
 }
@@ -51,10 +51,10 @@ VALUE Nokogiri_wrap_xml_namespace(xmlDocPtr doc, xmlNsPtr node)
 
   VALUE document = DOC_RUBY_OBJECT(doc);
 
-  VALUE node_cache = rb_iv_get(document, "@node_cache");
+  VALUE node_cache = rb_ivar_get(document, "@node_cache");
   rb_ary_push(node_cache, ns);
 
-  rb_iv_set(ns, "@document", DOC_RUBY_OBJECT(doc));
+  rb_ivar_set(ns, "@document", DOC_RUBY_OBJECT(doc));
 
   node->_private = (void *)ns;
 

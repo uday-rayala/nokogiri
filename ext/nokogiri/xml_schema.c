@@ -86,7 +86,7 @@ static VALUE read_memory(VALUE klass, SEL sel, VALUE content)
   }
 
   VALUE rb_schema = Data_Wrap_Struct(klass, 0, dealloc, schema);
-  rb_iv_set(rb_schema, "@errors", errors);
+  rb_ivar_set(rb_schema, "@errors", errors);
 
   return rb_schema;
 }
@@ -134,7 +134,7 @@ static VALUE from_document(VALUE klass, SEL sel, VALUE document)
   }
 
   VALUE rb_schema = Data_Wrap_Struct(klass, 0, dealloc, schema);
-  rb_iv_set(rb_schema, "@errors", errors);
+  rb_ivar_set(rb_schema, "@errors", errors);
 
   return rb_schema;
 

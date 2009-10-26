@@ -243,7 +243,7 @@ void init_xml_syntax_error()
   VALUE klass = rb_define_class_under(xml, "SyntaxError", syntax_error_mommy);
   cNokogiriXmlSyntaxError = klass;
 
-  rb_define_alloc_func(klass, allocate);
+  rb_objc_define_method(*(VALUE *)klass, "alloc", allocate, 0);
 
   rb_objc_define_method(klass, "message", message, 0);
   rb_objc_define_method(klass, "message=", set_message, 1);

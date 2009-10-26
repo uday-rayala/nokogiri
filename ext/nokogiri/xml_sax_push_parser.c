@@ -85,7 +85,7 @@ void init_xml_sax_push_parser()
 
   cNokogiriXmlSaxPushParser = klass;
 
-  rb_define_alloc_func(klass, allocate);
+  rb_objc_define_method(*(VALUE *)klass, "alloc", allocate, 0);
   rb_objc_define_method(klass, "initialize_native", initialize_native, 2);
   rb_objc_define_method(klass, "native_write", native_write, 2);
 }

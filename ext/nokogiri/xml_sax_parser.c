@@ -14,7 +14,7 @@ static ID id_cdata_block, id_cAttribute;
 static void start_document(void * ctx)
 {
   VALUE self = NOKOGIRI_SAX_SELF(ctx);
-  VALUE doc = rb_iv_get(self, "@document");
+  VALUE doc = rb_ivar_get(self, "@document");
 
   xmlParserCtxtPtr ctxt = NOKOGIRI_SAX_CTXT(ctx);
 
@@ -50,14 +50,14 @@ static void start_document(void * ctx)
 static void end_document(void * ctx)
 {
   VALUE self = NOKOGIRI_SAX_SELF(ctx);
-  VALUE doc = rb_iv_get(self, "@document");
+  VALUE doc = rb_ivar_get(self, "@document");
   rb_funcall(doc, id_end_document, 0);
 }
 
 static void start_element(void * ctx, const xmlChar *name, const xmlChar **atts)
 {
   VALUE self = NOKOGIRI_SAX_SELF(ctx);
-  VALUE doc = rb_iv_get(self, "@document");
+  VALUE doc = rb_ivar_get(self, "@document");
   VALUE attributes = rb_ary_new();
   const xmlChar * attr;
   int i = 0;
@@ -79,7 +79,7 @@ static void start_element(void * ctx, const xmlChar *name, const xmlChar **atts)
 static void end_element(void * ctx, const xmlChar *name)
 {
   VALUE self = NOKOGIRI_SAX_SELF(ctx);
-  VALUE doc = rb_iv_get(self, "@document");
+  VALUE doc = rb_ivar_get(self, "@document");
   rb_funcall(doc, id_end_element, 1, NOKOGIRI_STR_NEW2(name));
 }
 
@@ -125,7 +125,7 @@ start_element_ns (
   const xmlChar ** attributes)
 {
   VALUE self = NOKOGIRI_SAX_SELF(ctx);
-  VALUE doc = rb_iv_get(self, "@document");
+  VALUE doc = rb_ivar_get(self, "@document");
 
   VALUE attribute_list = attributes_as_list(self, nb_attributes, attributes);
 
@@ -166,7 +166,7 @@ end_element_ns (
   const xmlChar * uri)
 {
   VALUE self = NOKOGIRI_SAX_SELF(ctx);
-  VALUE doc = rb_iv_get(self, "@document");
+  VALUE doc = rb_ivar_get(self, "@document");
 
   rb_funcall(doc, id_end_element_namespace, 3, 
     NOKOGIRI_STR_NEW2(localname),
@@ -178,7 +178,7 @@ end_element_ns (
 static void characters_func(void * ctx, const xmlChar * ch, int len)
 {
   VALUE self = NOKOGIRI_SAX_SELF(ctx);
-  VALUE doc = rb_iv_get(self, "@document");
+  VALUE doc = rb_ivar_get(self, "@document");
   VALUE str = NOKOGIRI_STR_NEW(ch, len);
   rb_funcall(doc, id_characters, 1, str);
 }
@@ -186,7 +186,7 @@ static void characters_func(void * ctx, const xmlChar * ch, int len)
 static void comment_func(void * ctx, const xmlChar * value)
 {
   VALUE self = NOKOGIRI_SAX_SELF(ctx);
-  VALUE doc = rb_iv_get(self, "@document");
+  VALUE doc = rb_ivar_get(self, "@document");
   VALUE str = NOKOGIRI_STR_NEW2(value);
   rb_funcall(doc, id_comment, 1, str);
 }
@@ -194,7 +194,7 @@ static void comment_func(void * ctx, const xmlChar * value)
 static void warning_func(void * ctx, const char *msg, ...)
 {
   VALUE self = NOKOGIRI_SAX_SELF(ctx);
-  VALUE doc = rb_iv_get(self, "@document");
+  VALUE doc = rb_ivar_get(self, "@document");
   char * message;
 
   va_list args;
@@ -209,7 +209,7 @@ static void warning_func(void * ctx, const char *msg, ...)
 static void error_func(void * ctx, const char *msg, ...)
 {
   VALUE self = NOKOGIRI_SAX_SELF(ctx);
-  VALUE doc = rb_iv_get(self, "@document");
+  VALUE doc = rb_ivar_get(self, "@document");
   char * message;
 
   va_list args;
@@ -224,7 +224,7 @@ static void error_func(void * ctx, const char *msg, ...)
 static void cdata_block(void * ctx, const xmlChar * value, int len)
 {
   VALUE self = NOKOGIRI_SAX_SELF(ctx);
-  VALUE doc = rb_iv_get(self, "@document");
+  VALUE doc = rb_ivar_get(self, "@document");
   VALUE string = NOKOGIRI_STR_NEW(value, len);
   rb_funcall(doc, id_cdata_block, 1, string);
 }
@@ -268,7 +268,7 @@ void init_xml_sax_parser()
 
   cNokogiriXmlSaxParser = klass;
 
-  rb_define_alloc_func(klass, allocate);
+  rb_objc_define_method(*(VALUE *)klass, "alloc", allocate, 0);
 
   id_start_document = rb_intern("start_document");
   id_end_document   = rb_intern("end_document");

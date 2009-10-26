@@ -44,7 +44,7 @@ static VALUE get_c1(VALUE self, SEL sel)
   Data_Get_Struct(self, xmlElementContent, elem);
 
   if(!elem->c1) return Qnil;
-  return Nokogiri_wrap_element_content(rb_iv_get(self, "@document"), elem->c1);
+  return Nokogiri_wrap_element_content(rb_ivar_get(self, "@document"), elem->c1);
 }
 
 /*
@@ -59,7 +59,7 @@ static VALUE get_c2(VALUE self, SEL sel)
   Data_Get_Struct(self, xmlElementContent, elem);
 
   if(!elem->c2) return Qnil;
-  return Nokogiri_wrap_element_content(rb_iv_get(self, "@document"), elem->c2);
+  return Nokogiri_wrap_element_content(rb_ivar_get(self, "@document"), elem->c2);
 }
 
 /*
