@@ -33,7 +33,7 @@ static void element_copier(void *_payload, void *data, xmlChar *name)
  *
  * Get a hash of the elements for this DTD.
  */
-static VALUE entities(VALUE self)
+static VALUE entities(VALUE self, SEL sel)
 {
   xmlDtdPtr dtd;
   Data_Get_Struct(self, xmlDtd, dtd);
@@ -53,7 +53,7 @@ static VALUE entities(VALUE self)
  *
  * Get a hash of the notations for this DTD.
  */
-static VALUE notations(VALUE self)
+static VALUE notations(VALUE self, SEL sel)
 {
   xmlDtdPtr dtd;
   Data_Get_Struct(self, xmlDtd, dtd);
@@ -73,7 +73,7 @@ static VALUE notations(VALUE self)
  *
  * Get a hash of the attributes for this DTD.
  */
-static VALUE attributes(VALUE self)
+static VALUE attributes(VALUE self, SEL sel)
 {
   xmlDtdPtr dtd;
   Data_Get_Struct(self, xmlDtd, dtd);
@@ -93,7 +93,7 @@ static VALUE attributes(VALUE self)
  *
  * Get a hash of the elements for this DTD.
  */
-static VALUE elements(VALUE self)
+static VALUE elements(VALUE self, SEL sel)
 {
   xmlDtdPtr dtd;
   Data_Get_Struct(self, xmlDtd, dtd);
@@ -113,7 +113,7 @@ static VALUE elements(VALUE self)
  *
  * Validate +document+ returning a list of errors
  */
-static VALUE validate(VALUE self, VALUE document)
+static VALUE validate(VALUE self, SEL sel, VALUE document)
 {
   xmlDocPtr doc;
   xmlDtdPtr dtd;
@@ -141,7 +141,7 @@ static VALUE validate(VALUE self, VALUE document)
  *
  * Get the System ID for this DTD
  */
-static VALUE system_id(VALUE self)
+static VALUE system_id(VALUE self, SEL sel)
 {
   xmlDtdPtr dtd;
   Data_Get_Struct(self, xmlDtd, dtd);
@@ -157,7 +157,7 @@ static VALUE system_id(VALUE self)
  *
  * Get the External ID for this DTD
  */
-static VALUE external_id(VALUE self)
+static VALUE external_id(VALUE self, SEL sel)
 {
   xmlDtdPtr dtd;
   Data_Get_Struct(self, xmlDtd, dtd);
@@ -182,11 +182,11 @@ void init_xml_dtd()
 
   cNokogiriXmlDtd = klass;
 
-  rb_define_method(klass, "notations", notations, 0);
-  rb_define_method(klass, "elements", elements, 0);
-  rb_define_method(klass, "entities", entities, 0);
-  rb_define_method(klass, "validate", validate, 1);
-  rb_define_method(klass, "attributes", attributes, 0);
-  rb_define_method(klass, "system_id", system_id, 0);
-  rb_define_method(klass, "external_id", external_id, 0);
+  rb_objc_define_method(klass, "notations", notations, 0);
+  rb_objc_define_method(klass, "elements", elements, 0);
+  rb_objc_define_method(klass, "entities", entities, 0);
+  rb_objc_define_method(klass, "validate", validate, 1);
+  rb_objc_define_method(klass, "attributes", attributes, 0);
+  rb_objc_define_method(klass, "system_id", system_id, 0);
+  rb_objc_define_method(klass, "external_id", external_id, 0);
 }

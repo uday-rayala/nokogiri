@@ -6,7 +6,7 @@
  *
  * Create a new Comment element on the +document+ with +content+
  */
-static VALUE new(int argc, VALUE *argv, VALUE klass)
+static VALUE new(VALUE klass, SEL sel, int argc, VALUE *argv)
 {
   xmlDocPtr xml_doc;
   VALUE document;
@@ -48,5 +48,5 @@ void init_xml_comment()
 
   cNokogiriXmlComment = klass;
 
-  rb_define_singleton_method(klass, "new", new, -1);
+  rb_objc_define_method(*(VALUE *)klass, "new", new, -1);
 }

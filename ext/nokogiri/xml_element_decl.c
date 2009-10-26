@@ -8,7 +8,7 @@ static ID id_document;
  *
  * The element_type
  */
-static VALUE element_type(VALUE self)
+static VALUE element_type(VALUE self, SEL sel)
 {
   xmlElementPtr node;
   Data_Get_Struct(self, xmlElement, node);
@@ -21,7 +21,7 @@ static VALUE element_type(VALUE self)
  *
  * The allowed content for this ElementDecl
  */
-static VALUE content(VALUE self)
+static VALUE content(VALUE self, SEL sel)
 {
   xmlElementPtr node;
   Data_Get_Struct(self, xmlElement, node);
@@ -40,7 +40,7 @@ static VALUE content(VALUE self)
  *
  * The namespace prefix for this ElementDecl
  */
-static VALUE prefix(VALUE self)
+static VALUE prefix(VALUE self, SEL sel)
 {
   xmlElementPtr node;
   Data_Get_Struct(self, xmlElement, node);
@@ -61,9 +61,9 @@ void init_xml_element_decl()
 
   cNokogiriXmlElementDecl = klass;
 
-  rb_define_method(klass, "element_type", element_type, 0);
-  rb_define_method(klass, "content", content, 0);
-  rb_define_method(klass, "prefix", prefix, 0);
+  rb_objc_define_method(klass, "element_type", element_type, 0);
+  rb_objc_define_method(klass, "content", content, 0);
+  rb_objc_define_method(klass, "prefix", prefix, 0);
 
   id_document = rb_intern("document");
 }

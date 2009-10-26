@@ -8,7 +8,7 @@ VALUE cNokogiriXmlElementContent;
  *
  * Get the require element +name+
  */
-static VALUE get_name(VALUE self)
+static VALUE get_name(VALUE self, SEL sel)
 {
   xmlElementContentPtr elem;
   Data_Get_Struct(self, xmlElementContent, elem);
@@ -24,7 +24,7 @@ static VALUE get_name(VALUE self)
  * Get the element content +type+.  Possible values are PCDATA, ELEMENT, SEQ,
  * or OR.
  */
-static VALUE get_type(VALUE self)
+static VALUE get_type(VALUE self, SEL sel)
 {
   xmlElementContentPtr elem;
   Data_Get_Struct(self, xmlElementContent, elem);
@@ -38,7 +38,7 @@ static VALUE get_type(VALUE self)
  *
  * Get the first child.
  */
-static VALUE get_c1(VALUE self)
+static VALUE get_c1(VALUE self, SEL sel)
 {
   xmlElementContentPtr elem;
   Data_Get_Struct(self, xmlElementContent, elem);
@@ -53,7 +53,7 @@ static VALUE get_c1(VALUE self)
  *
  * Get the first child.
  */
-static VALUE get_c2(VALUE self)
+static VALUE get_c2(VALUE self, SEL sel)
 {
   xmlElementContentPtr elem;
   Data_Get_Struct(self, xmlElementContent, elem);
@@ -69,7 +69,7 @@ static VALUE get_c2(VALUE self)
  * Get the element content +occur+ flag.  Possible values are ONCE, OPT, MULT
  * or PLUS.
  */
-static VALUE get_occur(VALUE self)
+static VALUE get_occur(VALUE self, SEL sel)
 {
   xmlElementContentPtr elem;
   Data_Get_Struct(self, xmlElementContent, elem);
@@ -83,7 +83,7 @@ static VALUE get_occur(VALUE self)
  *
  * Get the element content namespace +prefix+.
  */
-static VALUE get_prefix(VALUE self)
+static VALUE get_prefix(VALUE self, SEL sel)
 {
   xmlElementContentPtr elem;
   Data_Get_Struct(self, xmlElementContent, elem);
@@ -99,7 +99,7 @@ VALUE Nokogiri_wrap_element_content(VALUE doc, xmlElementContentPtr element)
 
   // Setting the document is necessary so that this does not get GC'd until
   // the document is GC'd
-  rb_iv_set(elem, "@document", doc);
+  rb_ivar_set(elem, "@document", doc);
 
   return elem;
 }
@@ -113,11 +113,11 @@ void init_xml_element_content()
 
   cNokogiriXmlElementContent = klass;
 
-  rb_define_method(klass, "name", get_name, 0);
-  rb_define_method(klass, "type", get_type, 0);
-  rb_define_method(klass, "occur", get_occur, 0);
-  rb_define_method(klass, "prefix", get_prefix, 0);
+  rb_objc_define_method(klass, "name", get_name, 0);
+  rb_objc_define_method(klass, "type", get_type, 0);
+  rb_objc_define_method(klass, "occur", get_occur, 0);
+  rb_objc_define_method(klass, "prefix", get_prefix, 0);
 
-  rb_define_private_method(klass, "c1", get_c1, 0);
-  rb_define_private_method(klass, "c2", get_c2, 0);
+  rb_objc_define_method(klass, "c1", get_c1, 0);
+  rb_objc_define_method(klass, "c2", get_c2, 0);
 }

@@ -6,7 +6,7 @@
  *
  * Get the original_content before ref substitution
  */
-static VALUE original_content(VALUE self)
+static VALUE original_content(VALUE self, SEL sel)
 {
   xmlEntityPtr node;
   Data_Get_Struct(self, xmlEntity, node);
@@ -22,7 +22,7 @@ static VALUE original_content(VALUE self)
  *
  * Get the content
  */
-static VALUE get_content(VALUE self)
+static VALUE get_content(VALUE self, SEL sel)
 {
   xmlEntityPtr node;
   Data_Get_Struct(self, xmlEntity, node);
@@ -38,7 +38,7 @@ static VALUE get_content(VALUE self)
  *
  * Get the entity type
  */
-static VALUE entity_type(VALUE self)
+static VALUE entity_type(VALUE self, SEL sel)
 {
   xmlEntityPtr node;
   Data_Get_Struct(self, xmlEntity, node);
@@ -52,7 +52,7 @@ static VALUE entity_type(VALUE self)
  *
  * Get the external identifier for PUBLIC
  */
-static VALUE external_id(VALUE self)
+static VALUE external_id(VALUE self, SEL sel)
 {
   xmlEntityPtr node;
   Data_Get_Struct(self, xmlEntity, node);
@@ -68,7 +68,7 @@ static VALUE external_id(VALUE self)
  *
  * Get the URI for a SYSTEM or PUBLIC Entity
  */
-static VALUE system_id(VALUE self)
+static VALUE system_id(VALUE self, SEL sel)
 {
   xmlEntityPtr node;
   Data_Get_Struct(self, xmlEntity, node);
@@ -89,9 +89,9 @@ void init_xml_entity_decl()
 
   cNokogiriXmlEntityDecl = klass;
 
-  rb_define_method(klass, "original_content", original_content, 0);
-  rb_define_method(klass, "content", get_content, 0);
-  rb_define_method(klass, "entity_type", entity_type, 0);
-  rb_define_method(klass, "external_id", external_id, 0);
-  rb_define_method(klass, "system_id", system_id, 0);
+  rb_objc_define_method(klass, "original_content", original_content, 0);
+  rb_objc_define_method(klass, "content", get_content, 0);
+  rb_objc_define_method(klass, "entity_type", entity_type, 0);
+  rb_objc_define_method(klass, "external_id", external_id, 0);
+  rb_objc_define_method(klass, "system_id", system_id, 0);
 }

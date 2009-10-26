@@ -6,7 +6,7 @@
  *
  * The attribute_type for this AttributeDecl
  */
-static VALUE attribute_type(VALUE self)
+static VALUE attribute_type(VALUE self, SEL sel)
 {
   xmlAttributePtr node;
   Data_Get_Struct(self, xmlAttribute, node);
@@ -19,7 +19,7 @@ static VALUE attribute_type(VALUE self)
  *
  * The default value
  */
-static VALUE default_value(VALUE self)
+static VALUE default_value(VALUE self, SEL sel)
 {
   xmlAttributePtr node;
   Data_Get_Struct(self, xmlAttribute, node);
@@ -34,7 +34,7 @@ static VALUE default_value(VALUE self)
  *
  * An enumeration of possible values
  */
-static VALUE enumeration(VALUE self)
+static VALUE enumeration(VALUE self, SEL sel)
 {
   xmlAttributePtr node;
   Data_Get_Struct(self, xmlAttribute, node);
@@ -61,7 +61,7 @@ void init_xml_attribute_decl()
 
   cNokogiriXmlAttributeDecl = klass;
 
-  rb_define_method(klass, "attribute_type", attribute_type, 0);
-  rb_define_method(klass, "default", default_value, 0);
-  rb_define_method(klass, "enumeration", enumeration, 0);
+  rb_objc_define_method(klass, "attribute_type", attribute_type, 0);
+  rb_objc_define_method(klass, "default", default_value, 0);
+  rb_objc_define_method(klass, "enumeration", enumeration, 0);
 }

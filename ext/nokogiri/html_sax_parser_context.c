@@ -13,7 +13,7 @@ static void deallocate(xmlParserCtxtPtr ctxt)
   NOKOGIRI_DEBUG_END(handler);
 }
 
-static VALUE parse_memory(VALUE klass, VALUE data, VALUE encoding)
+static VALUE parse_memory(VALUE klass, SEL sel, VALUE data, VALUE encoding)
 {
   if(NIL_P(data)) rb_raise(rb_eArgError, "data cannot be nil");
   if(!(int)RSTRING_LEN(data))
@@ -27,7 +27,7 @@ static VALUE parse_memory(VALUE klass, VALUE data, VALUE encoding)
   return Data_Wrap_Struct(klass, NULL, deallocate, ctxt);
 }
 
-static VALUE parse_file(VALUE klass, VALUE filename, VALUE encoding)
+static VALUE parse_file(VALUE klass, SEL sel, VALUE filename, VALUE encoding)
 {
   htmlParserCtxtPtr ctxt = htmlCreateFileParserCtxt(
       StringValuePtr(filename),
@@ -36,7 +36,7 @@ static VALUE parse_file(VALUE klass, VALUE filename, VALUE encoding)
   return Data_Wrap_Struct(klass, NULL, deallocate, ctxt);
 }
 
-static VALUE parse_with(VALUE self, VALUE sax_handler)
+static VALUE parse_with(VALUE self, SEL sel, VALUE sax_handler)
 {
   if(!rb_obj_is_kind_of(sax_handler, cNokogiriXmlSaxParser))
     rb_raise(rb_eArgError, "argument must be a Nokogiri::XML::SAX::Parser");
@@ -73,8 +73,8 @@ void init_html_sax_parser_context()
 
   cNokogiriHtmlSaxParserContext = klass;
 
-  rb_define_singleton_method(klass, "memory", parse_memory, 2);
-  rb_define_singleton_method(klass, "file", parse_file, 2);
+  rb_objc_define_method(*(VALUE *)klass, "memory", parse_memory, 2);
+  rb_objc_define_method(*(VALUE *)klass, "file", parse_file, 2);
 
-  rb_define_method(klass, "parse_with", parse_with, 1);
+  rb_objc_define_method(klass, "parse_with", parse_with, 1);
 }

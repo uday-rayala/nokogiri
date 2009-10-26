@@ -8,7 +8,7 @@ VALUE cNokogiriXmlNamespace ;
  *
  * Get the prefix for this namespace.  Returns +nil+ if there is no prefix.
  */
-static VALUE prefix(VALUE self)
+static VALUE prefix(VALUE self, SEL sel)
 {
   xmlNsPtr ns;
   xmlDocPtr doc;
@@ -27,7 +27,7 @@ static VALUE prefix(VALUE self)
  *
  * Get the href for this namespace
  */
-static VALUE href(VALUE self)
+static VALUE href(VALUE self, SEL sel)
 {
   xmlNsPtr ns;
   xmlDocPtr doc;
@@ -69,6 +69,6 @@ void init_xml_namespace()
 
   cNokogiriXmlNamespace = klass;
 
-  rb_define_method(klass, "prefix", prefix, 0);
-  rb_define_method(klass, "href", href, 0);
+  rb_objc_define_method(klass, "prefix", prefix, 0);
+  rb_objc_define_method(klass, "href", href, 0);
 }
