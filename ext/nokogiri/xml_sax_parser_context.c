@@ -19,7 +19,7 @@ static void deallocate(xmlParserCtxtPtr ctxt)
  *
  * Parse +io+ object with +encoding+
  */
-static VALUE parse_io(VALUE klass, VALUE io, VALUE encoding)
+static VALUE parse_io(VALUE klass, SEL sel, VALUE io, VALUE encoding)
 {
   xmlCharEncoding enc = (xmlCharEncoding)NUM2INT(encoding); 
 
@@ -41,7 +41,7 @@ static VALUE parse_io(VALUE klass, VALUE io, VALUE encoding)
  *
  * Parse file given +filename+
  */
-static VALUE parse_file(VALUE klass, VALUE filename)
+static VALUE parse_file(VALUE klass, SEL sel, VALUE filename)
 {
   xmlParserCtxtPtr ctxt = xmlCreateFileParserCtxt(StringValuePtr(filename));
   return Data_Wrap_Struct(klass, NULL, deallocate, ctxt);
@@ -53,7 +53,7 @@ static VALUE parse_file(VALUE klass, VALUE filename)
  *
  * Parse the XML stored in memory in +data+
  */
-static VALUE parse_memory(VALUE klass, VALUE data)
+static VALUE parse_memory(VALUE klass, SEL sel, VALUE data)
 {
   if(NIL_P(data)) rb_raise(rb_eArgError, "data cannot be nil");
   if(!(int)RSTRING_LEN(data))
@@ -73,7 +73,7 @@ static VALUE parse_memory(VALUE klass, VALUE data)
  *
  * Use +sax_handler+ and parse the current document
  */
-static VALUE parse_with(VALUE self, VALUE sax_handler)
+static VALUE parse_with(VALUE self, SEL sel, VALUE sax_handler)
 {
   if(!rb_obj_is_kind_of(sax_handler, cNokogiriXmlSaxParser))
     rb_raise(rb_eArgError, "argument must be a Nokogiri::XML::SAX::Parser");
@@ -105,7 +105,7 @@ static VALUE parse_with(VALUE self, VALUE sax_handler)
  * Should this parser replace entities?  &amp; will get converted to '&' if
  * set to true
  */
-static VALUE set_replace_entities(VALUE self, VALUE value)
+static VALUE set_replace_entities(VALUE self, SEL sel, VALUE value)
 {
   xmlParserCtxtPtr ctxt;
   Data_Get_Struct(self, xmlParserCtxt, ctxt);
@@ -125,7 +125,7 @@ static VALUE set_replace_entities(VALUE self, VALUE value)
  * Should this parser replace entities?  &amp; will get converted to '&' if
  * set to true
  */
-static VALUE get_replace_entities(VALUE self)
+static VALUE get_replace_entities(VALUE self, SEL sel)
 {
   xmlParserCtxtPtr ctxt;
   Data_Get_Struct(self, xmlParserCtxt, ctxt);
@@ -145,11 +145,11 @@ void init_xml_sax_parser_context()
 
   cNokogiriXmlSaxParserContext = klass;
 
-  rb_define_singleton_method(klass, "io", parse_io, 2);
-  rb_define_singleton_method(klass, "memory", parse_memory, 1);
-  rb_define_singleton_method(klass, "file", parse_file, 1);
+  rb_objc_define_method(*(VALUE *)klass, "io", parse_io, 2);
+  rb_objc_define_method(*(VALUE *)klass, "memory", parse_memory, 1);
+  rb_objc_define_method(*(VALUE *)klass, "file", parse_file, 1);
 
-  rb_define_method(klass, "parse_with", parse_with, 1);
-  rb_define_method(klass, "replace_entities=", set_replace_entities, 1);
-  rb_define_method(klass, "replace_entities", get_replace_entities, 0);
+  rb_objc_define_method(klass, "parse_with", parse_with, 1);
+  rb_objc_define_method(klass, "replace_entities=", set_replace_entities, 1);
+  rb_objc_define_method(klass, "replace_entities", get_replace_entities, 0);
 }

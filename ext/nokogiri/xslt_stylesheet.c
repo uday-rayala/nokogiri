@@ -30,7 +30,7 @@ static void xslt_generic_error_handler(void * ctx, const char *msg, ...)
  *
  * Parse a stylesheet from +document+.
  */
-static VALUE parse_stylesheet_doc(VALUE klass, VALUE xmldocobj)
+static VALUE parse_stylesheet_doc(VALUE klass, SEL sel, VALUE xmldocobj)
 {
     xmlDocPtr xml ;
     xsltStylesheetPtr ss ;
@@ -53,7 +53,7 @@ static VALUE parse_stylesheet_doc(VALUE klass, VALUE xmldocobj)
  *
  * Serialize +document+ to an xml string.
  */
-static VALUE serialize(VALUE self, VALUE xmlobj)
+static VALUE serialize(VALUE self, SEL sel, VALUE xmlobj)
 {
     xmlDocPtr xml ;
     xsltStylesheetPtr ss ;
@@ -84,7 +84,7 @@ static VALUE serialize(VALUE self, VALUE xmlobj)
  *    puts xslt.transform(doc, ['key', 'value'])
  *
  */
-static VALUE transform(int argc, VALUE* argv, VALUE self)
+static VALUE transform(VALUE self, SEL sel, int argc, VALUE* argv)
 {
     VALUE xmldoc, paramobj ;
     xmlDocPtr xml ;
@@ -125,7 +125,7 @@ void init_xslt_stylesheet()
 
   cNokogiriXsltStylesheet = klass;
     
-  rb_define_singleton_method(klass, "parse_stylesheet_doc", parse_stylesheet_doc, 1);
-  rb_define_method(klass, "serialize", serialize, 1);
-  rb_define_method(klass, "transform", transform, -1);
+  rb_objc_define_method(*(VALUE *)klass, "parse_stylesheet_doc", parse_stylesheet_doc, 1);
+  rb_objc_define_method(klass, "serialize", serialize, 1);
+  rb_objc_define_method(klass, "transform", transform, -1);
 }

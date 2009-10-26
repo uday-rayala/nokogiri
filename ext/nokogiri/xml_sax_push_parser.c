@@ -21,7 +21,7 @@ static VALUE allocate(VALUE klass)
  *
  * Write +chunk+ to PushParser. +last_chunk+ triggers the end_document handle
  */
-static VALUE native_write(VALUE self, VALUE _chunk, VALUE _last_chunk)
+static VALUE native_write(VALUE self, SEL sel, VALUE _chunk, VALUE _last_chunk)
 {
   xmlParserCtxtPtr ctx;
   Data_Get_Struct(self, xmlParserCtxt, ctx);
@@ -48,7 +48,7 @@ static VALUE native_write(VALUE self, VALUE _chunk, VALUE _last_chunk)
  *
  * Initialize the push parser with +xml_sax+ using +filename+
  */
-static VALUE initialize_native(VALUE self, VALUE _xml_sax, VALUE _filename)
+static VALUE initialize_native(VALUE self, SEL sel, VALUE _xml_sax, VALUE _filename)
 {
   xmlSAXHandlerPtr sax;
 
@@ -86,6 +86,6 @@ void init_xml_sax_push_parser()
   cNokogiriXmlSaxPushParser = klass;
 
   rb_define_alloc_func(klass, allocate);
-  rb_define_private_method(klass, "initialize_native", initialize_native, 2);
-  rb_define_private_method(klass, "native_write", native_write, 2);
+  rb_objc_define_method(klass, "initialize_native", initialize_native, 2);
+  rb_objc_define_method(klass, "native_write", native_write, 2);
 }

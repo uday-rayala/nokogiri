@@ -13,7 +13,7 @@ static void dealloc(xmlSchemaPtr schema)
  *
  * Validate a Nokogiri::XML::Document against this Schema.
  */
-static VALUE validate_document(VALUE self, VALUE document)
+static VALUE validate_document(VALUE self, SEL sel, VALUE document)
 {
   xmlDocPtr doc;
   xmlSchemaPtr schema;
@@ -51,7 +51,7 @@ static VALUE validate_document(VALUE self, VALUE document)
  *
  * Create a new Schema from the contents of +string+
  */
-static VALUE read_memory(VALUE klass, VALUE content)
+static VALUE read_memory(VALUE klass, SEL sel, VALUE content)
 {
 
   xmlSchemaParserCtxtPtr ctx = xmlSchemaNewMemParserCtxt(
@@ -97,7 +97,7 @@ static VALUE read_memory(VALUE klass, VALUE content)
  *
  * Create a new Schema from the Nokogiri::XML::Document +doc+
  */
-static VALUE from_document(VALUE klass, VALUE document)
+static VALUE from_document(VALUE klass, SEL sel, VALUE document)
 {
   xmlDocPtr doc;
   Data_Get_Struct(document, xmlDoc, doc);
@@ -150,7 +150,7 @@ void init_xml_schema()
 
   cNokogiriXmlSchema = klass;
 
-  rb_define_singleton_method(klass, "read_memory", read_memory, 1);
-  rb_define_singleton_method(klass, "from_document", from_document, 1);
-  rb_define_private_method(klass, "validate_document", validate_document, 1);
+  rb_objc_define_method(*(VALUE *)klass, "read_memory", read_memory, 1);
+  rb_objc_define_method(*(VALUE *)klass, "from_document", from_document, 1);
+  rb_objc_define_method(klass, "validate_document", validate_document, 1);
 }

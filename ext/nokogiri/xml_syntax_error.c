@@ -21,7 +21,7 @@ static VALUE allocate(VALUE klass)
  *
  * Column number or 0 if not available
  */
-static VALUE column(VALUE self)
+static VALUE column(VALUE self, SEL sel)
 {
   xmlErrorPtr error;
   Data_Get_Struct(self, xmlError, error);
@@ -34,7 +34,7 @@ static VALUE column(VALUE self)
  *
  * Extra number information
  */
-static VALUE int1(VALUE self)
+static VALUE int1(VALUE self, SEL sel)
 {
   xmlErrorPtr error;
   Data_Get_Struct(self, xmlError, error);
@@ -47,7 +47,7 @@ static VALUE int1(VALUE self)
  *
  * Extra string information
  */
-static VALUE str3(VALUE self)
+static VALUE str3(VALUE self, SEL sel)
 {
   xmlErrorPtr error;
   Data_Get_Struct(self, xmlError, error);
@@ -61,7 +61,7 @@ static VALUE str3(VALUE self)
  *
  * Extra string information
  */
-static VALUE str2(VALUE self)
+static VALUE str2(VALUE self, SEL sel)
 {
   xmlErrorPtr error;
   Data_Get_Struct(self, xmlError, error);
@@ -75,7 +75,7 @@ static VALUE str2(VALUE self)
  *
  * Extra string information
  */
-static VALUE str1(VALUE self)
+static VALUE str1(VALUE self, SEL sel)
 {
   xmlErrorPtr error;
   Data_Get_Struct(self, xmlError, error);
@@ -89,7 +89,7 @@ static VALUE str1(VALUE self)
  *
  * Get the line number of the error
  */
-static VALUE line(VALUE self)
+static VALUE line(VALUE self, SEL sel)
 {
   xmlErrorPtr error;
   Data_Get_Struct(self, xmlError, error);
@@ -102,7 +102,7 @@ static VALUE line(VALUE self)
  *
  * Get the filename for the error
  */
-static VALUE file(VALUE self)
+static VALUE file(VALUE self, SEL sel)
 {
   xmlErrorPtr error;
   Data_Get_Struct(self, xmlError, error);
@@ -117,7 +117,7 @@ static VALUE file(VALUE self)
  *
  * Get the error level
  */
-static VALUE level(VALUE self)
+static VALUE level(VALUE self, SEL sel)
 {
   xmlErrorPtr error;
   Data_Get_Struct(self, xmlError, error);
@@ -130,7 +130,7 @@ static VALUE level(VALUE self)
  *
  * Get the error code
  */
-static VALUE code(VALUE self)
+static VALUE code(VALUE self, SEL sel)
 {
   xmlErrorPtr error;
   Data_Get_Struct(self, xmlError, error);
@@ -143,7 +143,7 @@ static VALUE code(VALUE self)
  *
  * Get the part of the library that raised this exception
  */
-static VALUE domain(VALUE self)
+static VALUE domain(VALUE self, SEL sel)
 {
   xmlErrorPtr error;
   Data_Get_Struct(self, xmlError, error);
@@ -156,7 +156,7 @@ static VALUE domain(VALUE self)
  *
  * Get the human readable message.
  */
-static VALUE message(VALUE self)
+static VALUE message(VALUE self, SEL sel)
 {
   xmlErrorPtr error;
   Data_Get_Struct(self, xmlError, error);
@@ -170,7 +170,7 @@ static VALUE message(VALUE self)
  *
  * Set the human readable message.
  */
-static VALUE set_message(VALUE self, VALUE _message)
+static VALUE set_message(VALUE self, SEL sel, VALUE _message)
 {
   xmlErrorPtr error;
   Data_Get_Struct(self, xmlError, error);
@@ -195,7 +195,7 @@ static VALUE set_message(VALUE self, VALUE _message)
  *
  * Initialize a copy of the +old_copy+
  */
-static VALUE initialize_copy(VALUE self, VALUE _old_copy)
+static VALUE initialize_copy(VALUE self, SEL sel, VALUE _old_copy)
 {
   if(!rb_obj_is_kind_of(_old_copy, cNokogiriXmlSyntaxError))
     rb_raise(rb_eArgError, "node must be a Nokogiri::XML::SyntaxError");
@@ -245,17 +245,17 @@ void init_xml_syntax_error()
 
   rb_define_alloc_func(klass, allocate);
 
-  rb_define_method(klass, "message", message, 0);
-  rb_define_method(klass, "message=", set_message, 1);
-  rb_define_method(klass, "initialize_copy", initialize_copy, 1);
-  rb_define_method(klass, "domain", domain, 0);
-  rb_define_method(klass, "code", code, 0);
-  rb_define_method(klass, "level", level, 0);
-  rb_define_method(klass, "file", file, 0);
-  rb_define_method(klass, "line", line, 0);
-  rb_define_method(klass, "str1", str1, 0);
-  rb_define_method(klass, "str2", str2, 0);
-  rb_define_method(klass, "str3", str3, 0);
-  rb_define_method(klass, "int1", int1, 0);
-  rb_define_method(klass, "column", column, 0);
+  rb_objc_define_method(klass, "message", message, 0);
+  rb_objc_define_method(klass, "message=", set_message, 1);
+  rb_objc_define_method(klass, "initialize_copy", initialize_copy, 1);
+  rb_objc_define_method(klass, "domain", domain, 0);
+  rb_objc_define_method(klass, "code", code, 0);
+  rb_objc_define_method(klass, "level", level, 0);
+  rb_objc_define_method(klass, "file", file, 0);
+  rb_objc_define_method(klass, "line", line, 0);
+  rb_objc_define_method(klass, "str1", str1, 0);
+  rb_objc_define_method(klass, "str2", str2, 0);
+  rb_objc_define_method(klass, "str3", str3, 0);
+  rb_objc_define_method(klass, "int1", int1, 0);
+  rb_objc_define_method(klass, "column", column, 0);
 }
