@@ -6,7 +6,7 @@
  *
  * A list of required attributes for this element
  */
-static VALUE required_attributes(VALUE self)
+static VALUE required_attributes(VALUE self, SEL sel)
 {
   htmlElemDesc * description;
   Data_Get_Struct(self, htmlElemDesc, description);
@@ -30,7 +30,7 @@ static VALUE required_attributes(VALUE self)
  *
  * A list of deprecated attributes for this element
  */
-static VALUE deprecated_attributes(VALUE self)
+static VALUE deprecated_attributes(VALUE self, SEL sel)
 {
   htmlElemDesc * description;
   Data_Get_Struct(self, htmlElemDesc, description);
@@ -54,7 +54,7 @@ static VALUE deprecated_attributes(VALUE self)
  *
  * A list of optional attributes for this element
  */
-static VALUE optional_attributes(VALUE self)
+static VALUE optional_attributes(VALUE self, SEL sel)
 {
   htmlElemDesc * description;
   Data_Get_Struct(self, htmlElemDesc, description);
@@ -78,7 +78,7 @@ static VALUE optional_attributes(VALUE self)
  *
  * The default sub element for this element
  */
-static VALUE default_sub_element(VALUE self)
+static VALUE default_sub_element(VALUE self, SEL sel)
 {
   htmlElemDesc * description;
   Data_Get_Struct(self, htmlElemDesc, description);
@@ -92,7 +92,7 @@ static VALUE default_sub_element(VALUE self)
  *
  * A list of allowed sub elements for this element.
  */
-static VALUE sub_elements(VALUE self)
+static VALUE sub_elements(VALUE self, SEL sel)
 {
   htmlElemDesc * description;
   Data_Get_Struct(self, htmlElemDesc, description);
@@ -116,7 +116,7 @@ static VALUE sub_elements(VALUE self)
  *
  * The description for this element
  */
-static VALUE description(VALUE self)
+static VALUE description(VALUE self, SEL sel)
 {
   htmlElemDesc * description;
   Data_Get_Struct(self, htmlElemDesc, description);
@@ -130,7 +130,7 @@ static VALUE description(VALUE self)
  *
  * Is this element an inline element?
  */
-static VALUE inline_eh(VALUE self)
+static VALUE inline_eh(VALUE self, SEL sel)
 {
   htmlElemDesc * description;
   Data_Get_Struct(self, htmlElemDesc, description);
@@ -145,7 +145,7 @@ static VALUE inline_eh(VALUE self)
  *
  * Is this element deprecated?
  */
-static VALUE deprecated_eh(VALUE self)
+static VALUE deprecated_eh(VALUE self, SEL sel)
 {
   htmlElemDesc * description;
   Data_Get_Struct(self, htmlElemDesc, description);
@@ -160,7 +160,7 @@ static VALUE deprecated_eh(VALUE self)
  *
  * Is this an empty element?
  */
-static VALUE empty_eh(VALUE self)
+static VALUE empty_eh(VALUE self, SEL sel)
 {
   htmlElemDesc * description;
   Data_Get_Struct(self, htmlElemDesc, description);
@@ -175,7 +175,7 @@ static VALUE empty_eh(VALUE self)
  *
  * Should the end tag be saved?
  */
-static VALUE save_end_tag_eh(VALUE self)
+static VALUE save_end_tag_eh(VALUE self, SEL sel)
 {
   htmlElemDesc * description;
   Data_Get_Struct(self, htmlElemDesc, description);
@@ -190,7 +190,7 @@ static VALUE save_end_tag_eh(VALUE self)
  *
  * Can the end tag be implied for this tag?
  */
-static VALUE implied_end_tag_eh(VALUE self)
+static VALUE implied_end_tag_eh(VALUE self, SEL sel)
 {
   htmlElemDesc * description;
   Data_Get_Struct(self, htmlElemDesc, description);
@@ -205,7 +205,7 @@ static VALUE implied_end_tag_eh(VALUE self)
  *
  * Can the start tag be implied for this tag?
  */
-static VALUE implied_start_tag_eh(VALUE self)
+static VALUE implied_start_tag_eh(VALUE self, SEL sel)
 {
   htmlElemDesc * description;
   Data_Get_Struct(self, htmlElemDesc, description);
@@ -220,7 +220,7 @@ static VALUE implied_start_tag_eh(VALUE self)
  *
  * Get the tag name for this ElemementDescription
  */
-static VALUE name(VALUE self)
+static VALUE name(VALUE self, SEL sel)
 {
   htmlElemDesc * description;
   Data_Get_Struct(self, htmlElemDesc, description);
@@ -235,7 +235,7 @@ static VALUE name(VALUE self)
  *
  * Get ElemementDescription for +tag_name+
  */
-static VALUE get_description(VALUE klass, VALUE tag_name)
+static VALUE get_description(VALUE klass, SEL sel, VALUE tag_name)
 {
   const htmlElemDesc * description = htmlTagLookup(
       (const xmlChar *)StringValuePtr(tag_name)
@@ -254,19 +254,19 @@ void init_html_element_description()
 
   cNokogiriHtmlElementDescription = klass;
 
-  rb_define_singleton_method(klass, "[]", get_description, 1);
+  rb_objc_define_method(*(VALUE *)klass, "[]", get_description, 1);
 
-  rb_define_method(klass, "name", name, 0);
-  rb_define_method(klass, "implied_start_tag?", implied_start_tag_eh, 0);
-  rb_define_method(klass, "implied_end_tag?", implied_end_tag_eh, 0);
-  rb_define_method(klass, "save_end_tag?", save_end_tag_eh, 0);
-  rb_define_method(klass, "empty?", empty_eh, 0);
-  rb_define_method(klass, "deprecated?", deprecated_eh, 0);
-  rb_define_method(klass, "inline?", inline_eh, 0);
-  rb_define_method(klass, "description", description, 0);
-  rb_define_method(klass, "sub_elements", sub_elements, 0);
-  rb_define_method(klass, "default_sub_element", default_sub_element, 0);
-  rb_define_method(klass, "optional_attributes", optional_attributes, 0);
-  rb_define_method(klass, "deprecated_attributes", deprecated_attributes, 0);
-  rb_define_method(klass, "required_attributes", required_attributes, 0);
+  rb_objc_define_method(klass, "name", name, 0);
+  rb_objc_define_method(klass, "implied_start_tag?", implied_start_tag_eh, 0);
+  rb_objc_define_method(klass, "implied_end_tag?", implied_end_tag_eh, 0);
+  rb_objc_define_method(klass, "save_end_tag?", save_end_tag_eh, 0);
+  rb_objc_define_method(klass, "empty?", empty_eh, 0);
+  rb_objc_define_method(klass, "deprecated?", deprecated_eh, 0);
+  rb_objc_define_method(klass, "inline?", inline_eh, 0);
+  rb_objc_define_method(klass, "description", description, 0);
+  rb_objc_define_method(klass, "sub_elements", sub_elements, 0);
+  rb_objc_define_method(klass, "default_sub_element", default_sub_element, 0);
+  rb_objc_define_method(klass, "optional_attributes", optional_attributes, 0);
+  rb_objc_define_method(klass, "deprecated_attributes", deprecated_attributes, 0);
+  rb_objc_define_method(klass, "required_attributes", required_attributes, 0);
 }

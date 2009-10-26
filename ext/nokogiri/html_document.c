@@ -1,4 +1,4 @@
-#include <html_document.h>
+#include <nokogiri.h>
 
 /*
  * call-seq:
