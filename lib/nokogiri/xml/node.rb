@@ -98,7 +98,7 @@ module Nokogiri
           (document.root ? document.root.namespaces : {})
         xpath(*(paths.map { |path|
           path = path.to_s
-          path =~ /^(\.\/|\/)/ ? path : CSS.xpath_for(
+          path =~ /^(\.\/|\/)/ ? path : Nokogiri::CSS.xpath_for(
             path,
             :prefix => ".//",
             :ns     => ns
@@ -187,7 +187,7 @@ module Nokogiri
           (document.root ? document.root.namespaces : {})
 
         rules = rules.map { |rule|
-          CSS.xpath_for(rule, :prefix => ".//", :ns => ns)
+          Nokogiri::CSS.xpath_for(rule, :prefix => ".//", :ns => ns)
         }.flatten.uniq + [ns, handler].compact
 
         xpath(*rules)
