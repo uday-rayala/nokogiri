@@ -1,0 +1,8 @@
+Stealing lrz's style todo  ;-)
+
+[ ] Parsing documents sometimes segv's
+[ ] to_html segvs
+[ ] encoding support is totally broken
+[ ] No tests run
+[ ] constant lookup seems broken so constants will be missing sometimes
+[ ] Can't build with Rakefile

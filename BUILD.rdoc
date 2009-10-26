@@ -1,0 +1,23 @@
+= Building
+
+MacRuby 0.5 doesn't seem to be able to deal with my Rakefile, so here is how
+I've been building:
+
+  $ cd ext/nokogiri
+  $ macruby extconf.rb
+  $ make
+  $ cd ../../
+  $ macirb -I lib:ext
+
+= IMPORTANT
+
+Make sure to build with libxml2 that comes shipped with snow leopard, *not*
+the one in macports.  Or if you do build with macports, make sure the macports
+one was installed with +universal.
+
+== Notes
+
+I get many segv's, so I need to install LLVM and build my own macruby in order
+to get decent backtraces.  See +TODO+ for stuff that breaks that *I know about*.
+There may be many other things that break.
+
