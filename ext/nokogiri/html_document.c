@@ -94,7 +94,7 @@ static VALUE read_memory( VALUE klass,
   xmlResetLastError();
   xmlSetStructuredErrorFunc((void *)error_list, Nokogiri_error_array_pusher);
 
-  htmlDocPtr doc = htmlReadMemory(c_buffer, len, c_url, c_enc, 0);
+  htmlDocPtr doc = htmlReadMemory(c_buffer, len, c_url, c_enc, NUM2INT(options));
   xmlSetStructuredErrorFunc(NULL, NULL);
 
   if(doc == NULL) {
