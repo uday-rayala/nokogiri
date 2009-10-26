@@ -6,7 +6,7 @@
  *
  * Get the HTML::EntityDescription for +key+
  */
-static VALUE get(VALUE self, VALUE key)
+static VALUE get(VALUE self, SEL sel, VALUE key)
 {
   const htmlEntityDesc * desc =
     htmlEntityLookup((const xmlChar *)StringValuePtr(key));
@@ -28,5 +28,5 @@ void init_html_entity_lookup()
   VALUE html = rb_define_module_under(nokogiri, "HTML");
   VALUE klass = rb_define_class_under(html, "EntityLookup", rb_cObject);
 
-  rb_define_method(klass, "get", get, 1);
+  rb_objc_define_method(klass, "get", get, 1);
 }
