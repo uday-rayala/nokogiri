@@ -517,9 +517,9 @@ Node.replace requires a Node argument, and cannot accept a Document.
         encoding = options[:encoding] || document.encoding
 
         outstring = ""
-        if encoding && outstring.respond_to?(:force_encoding)
-          outstring.force_encoding(Encoding.find(encoding))
-        end
+        #if encoding && outstring.respond_to?(:force_encoding)
+        #  outstring.force_encoding(Encoding.find(encoding))
+        #end
         io = StringIO.new(outstring)
         write_to io, options, &block
         io.string
@@ -534,7 +534,7 @@ Node.replace requires a Node argument, and cannot accept a Document.
       # use Node#to_xhtml instead.
       def to_html options = {}
         # FIXME: this is a hack around broken libxml versions
-        return dump_html if %w[2 6] === LIBXML_VERSION.split('.')[0..1]
+        return dump_html if %w[2 6] === Nokogiri::LIBXML_VERSION.split('.')[0..1]
 
         options[:save_with] ||= SaveOptions::FORMAT |
                                 SaveOptions::NO_DECLARATION |
@@ -566,7 +566,7 @@ Node.replace requires a Node argument, and cannot accept a Document.
       # See Node#write_to for a list of +options+
       def to_xhtml options = {}
         # FIXME: this is a hack around broken libxml versions
-        return dump_html if %w[2 6] === LIBXML_VERSION.split('.')[0..1]
+        return dump_html if %w[2 6] === Nokogiri::LIBXML_VERSION.split('.')[0..1]
 
         options[:save_with] ||= SaveOptions::FORMAT |
                                 SaveOptions::NO_DECLARATION |
@@ -613,7 +613,7 @@ Node.replace requires a Node argument, and cannot accept a Document.
       # See Node#write_to for a list of +options+
       def write_html_to io, options = {}
         # FIXME: this is a hack around broken libxml versions
-        return (io << dump_html) if %w[2 6] === LIBXML_VERSION.split('.')[0..1]
+        return (io << dump_html) if %w[2 6] === Nokogiri::LIBXML_VERSION.split('.')[0..1]
 
         options[:save_with] ||= SaveOptions::FORMAT |
           SaveOptions::NO_DECLARATION |
@@ -628,7 +628,7 @@ Node.replace requires a Node argument, and cannot accept a Document.
       # See Node#write_to for a list of +options+
       def write_xhtml_to io, options = {}
         # FIXME: this is a hack around broken libxml versions
-        return (io << dump_html) if %w[2 6] === LIBXML_VERSION.split('.')[0..1]
+        return (io << dump_html) if %w[2 6] === Nokogiri::LIBXML_VERSION.split('.')[0..1]
 
         options[:save_with] ||= SaveOptions::FORMAT |
           SaveOptions::NO_DECLARATION |

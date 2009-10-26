@@ -67,9 +67,10 @@ module Nokogiri
           # Give the options to the user
           yield options if block_given?
 
-          if string_or_io.respond_to?(:encoding)
-            encoding ||= string_or_io.encoding.name
-          end
+          # FIXME MacRuby returns encoding that isn't iconv friendly
+          #if string_or_io.respond_to?(:encoding)
+          #  encoding ||= string_or_io.encoding.name
+          #end
 
           if string_or_io.respond_to?(:read)
             url ||= string_or_io.respond_to?(:path) ? string_or_io.path : nil

@@ -60,7 +60,7 @@ module Nokogiri
 
   module SAX
     class TestCase < Nokogiri::TestCase
-      class Doc < XML::SAX::Document
+      class Doc < Nokogiri::XML::SAX::Document
         attr_reader :start_elements, :start_document_called
         attr_reader :end_elements, :end_document_called
         attr_reader :data, :comments, :cdata_blocks, :start_elements_namespace

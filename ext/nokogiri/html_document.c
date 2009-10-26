@@ -6,7 +6,7 @@
  *
  * Create a new document
  */
-static VALUE new(int argc, VALUE *argv, VALUE klass)
+static VALUE new(VALUE klass, SEL sel, int argc, VALUE *argv)
 {
   VALUE uri, external_id, rest, rb_doc;
 
@@ -31,6 +31,7 @@ static VALUE new(int argc, VALUE *argv, VALUE klass)
  * and +options+.  See Nokogiri::HTML.parse
  */
 static VALUE read_io( VALUE klass,
+                      SEL sel,
                       VALUE io,
                       VALUE url,
                       VALUE encoding,
@@ -78,6 +79,7 @@ static VALUE read_io( VALUE klass,
  * and +options+.  See Nokogiri::HTML.parse
  */
 static VALUE read_memory( VALUE klass,
+                          SEL sel,
                           VALUE string,
                           VALUE url,
                           VALUE encoding,
@@ -92,7 +94,7 @@ static VALUE read_memory( VALUE klass,
   xmlResetLastError();
   xmlSetStructuredErrorFunc((void *)error_list, Nokogiri_error_array_pusher);
 
-  htmlDocPtr doc = htmlReadMemory(c_buffer, len, c_url, c_enc, (int)NUM2INT(options));
+  htmlDocPtr doc = htmlReadMemory(c_buffer, len, c_url, c_enc, 0);
   xmlSetStructuredErrorFunc(NULL, NULL);
 
   if(doc == NULL) {
@@ -108,7 +110,7 @@ static VALUE read_memory( VALUE klass,
   }
 
   VALUE document = Nokogiri_wrap_xml_document(klass, doc);
-  rb_iv_set(document, "@errors", error_list);
+  rb_ivar_set(document, "@errors", error_list);
   return document;
 }
 
@@ -118,7 +120,7 @@ static VALUE read_memory( VALUE klass,
  *
  * The type for this document
  */
-static VALUE type(VALUE self)
+static VALUE type(VALUE self, SEL sel)
 {
   htmlDocPtr doc;
   Data_Get_Struct(self, xmlDoc, doc);
@@ -137,9 +139,9 @@ void init_html_document()
 
   cNokogiriHtmlDocument = klass;
 
-  rb_define_singleton_method(klass, "read_memory", read_memory, 4);
-  rb_define_singleton_method(klass, "read_io", read_io, 4);
-  rb_define_singleton_method(klass, "new", new, -1);
+  rb_objc_define_method(*(VALUE *)klass, "read_memory", read_memory, 4);
+  rb_objc_define_method(*(VALUE *)klass, "read_io", read_io, 4);
+  rb_objc_define_method(*(VALUE *)klass, "new", new, -1);
 
-  rb_define_method(klass, "type", type, 0);
+  rb_objc_define_method(klass, "type", type, 0);
 }
