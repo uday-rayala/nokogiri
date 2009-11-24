@@ -26,6 +26,9 @@ typedef xmlNodePtr (*node_other_func)(xmlNodePtr, xmlNodePtr);
 /* :nodoc: */
 static void relink_namespace(xmlNodePtr reparented)
 {
+  // Avoid segv when relinking against unlinked nodes.
+  if(!reparented->parent) return;
+
   // Make sure that our reparented node has the correct namespaces
   if(!reparented->ns && reparented->doc != (xmlDocPtr)reparented->parent)
     xmlSetNs(reparented, reparented->parent->ns);
@@ -54,6 +57,17 @@ static void relink_namespace(xmlNodePtr reparented)
 }
 
 /* :nodoc: */
+static xmlNodePtr xmlReplaceNodeWrapper(xmlNodePtr old, xmlNodePtr cur)
+{
+  xmlNodePtr retval ;
+  retval = xmlReplaceNode(old, cur) ;
+  if (retval == old) {
+    return cur ; // return semantics for reparent_node_with
+  }
+  return retval ;
+}
+
+/* :nodoc: */
 static VALUE reparent_node_with(VALUE node_obj, VALUE other_obj, node_other_func func)
 {
   VALUE reparented_obj ;
@@ -67,17 +81,6 @@ static VALUE reparent_node_with(VALUE node_obj, VALUE other_obj, node_other_func
 
   if(XML_DOCUMENT_NODE == node->type || XML_HTML_DOCUMENT_NODE == node->type)
     rb_raise(rb_eArgError, "cannot reparent a document node");
-
-  // If a document fragment is added, we need to reparent all of it's children
-  if(node->type == XML_DOCUMENT_FRAG_NODE)
-  {
-    xmlNodePtr child = node->children;
-    while(NULL != child) {
-      reparent_node_with(Nokogiri_wrap_xml_node((VALUE)NULL, child), other_obj, func);
-      child = child->next;
-    }
-    return node_obj;
-  }
 
   if(node->type == XML_TEXT_NODE) {
     NOKOGIRI_ROOT_NODE(node);
@@ -367,17 +370,24 @@ static VALUE previous_sibling(VALUE self, SEL sel)
   return Nokogiri_wrap_xml_node(Qnil, sibling);
 }
 
-/* :nodoc: */
 static VALUE replace(VALUE self, SEL sel, VALUE _new_node)
 {
-  xmlNodePtr node, new_node;
+  xmlNodePtr node, sibling;
   Data_Get_Struct(self, xmlNode, node);
-  Data_Get_Struct(_new_node, xmlNode, new_node);
 
-  xmlReplaceNode(node, new_node);
+  sibling = node->next;
+  if(!sibling) return Qnil;
 
-  // Appropriately link in namespaces
-  relink_namespace(new_node);
+  while(sibling && sibling->type != XML_ELEMENT_NODE)
+    sibling = sibling->next;
+
+  return Nokogiri_wrap_xml_node(Qnil, sibling) ;
+}
+
+/* :nodoc: */
+static VALUE replace(VALUE self, VALUE _new_node)
+{
+  reparent_node_with(_new_node, self, xmlReplaceNodeWrapper) ;
   return self ;
 }
 
@@ -1054,6 +1064,6 @@ void init_xml_node()
   rb_objc_define_method(klass, "set_namespace", set_namespace, 1);
   rb_objc_define_method(klass, "compare", compare, 1);
 
-  decorate = rb_intern("decorate");
+  decorate      = rb_intern("decorate");
   decorate_bang = rb_intern("decorate!");
 }

@@ -194,6 +194,13 @@ module Nokogiri
       end
 
       ###
+      # Search this node's immidiate children using CSS selector +selector+
+      def > selector
+        ns = document.root.namespaces
+        xpath CSS.xpath_for(selector, :prefix => "./", :ns => ns).first
+      end
+
+      ###
       # Search for the first occurrence of +path+.
       # Returns nil if nothing is found, otherwise a Node.
       def at path, ns = document.root ? document.root.namespaces : {}
@@ -226,10 +233,52 @@ module Nokogiri
         get(name.to_s)
       end
 
+      ###
+      # Add +node+ as a child of this Node.
+      # The new node must be a Nokogiri::XML::Node or a non-empty String.
+      # Returns the new child node.
+      def add_child(node)
+        Node.verify_nodeishness(node)
+        if node.type == DOCUMENT_FRAG_NODE
+          node.children.each do |child|
+            add_child_node child
+          end
+        else
+          add_child_node node
+        end
+      end
+
+      ###
+      # Insert +node+ before this Node (as a sibling).
+      def add_previous_sibling(node)
+        Node.verify_nodeishness(node)
+        if node.type == DOCUMENT_FRAG_NODE
+          node.children.each do |child|
+            add_previous_sibling_node child
+          end
+        else
+          add_previous_sibling_node node
+        end
+      end
+
+      ###
+      # Insert +node+ after this Node (as a sibling).
+      def add_next_sibling(node)
+        Node.verify_nodeishness(node)
+        if node.type == DOCUMENT_FRAG_NODE
+          node.children.reverse.each do |child|
+            add_next_sibling_node child
+          end
+        else
+          add_next_sibling_node node
+        end
+      end
+
       alias :next           :next_sibling
       alias :previous       :previous_sibling
       alias :remove         :unlink
       alias :get_attribute  :[]
+      alias :attr           :[]
       alias :set_attribute  :[]=
       alias :text           :content
       alias :inner_text     :content
@@ -242,8 +291,9 @@ module Nokogiri
       alias :clone          :dup
 
       ####
-      # Returns a hash containing the node's attributes.  The key is the
-      # attribute name, the value is the string value of the attribute.
+      # Returns a hash containing the node's attributes.  The key is
+      # the attribute name, the value is a Nokogiri::XML::Attr
+      # representing the attribute.
       def attributes
         Hash[*(attribute_nodes.map { |node|
           [node.node_name, node]
@@ -280,7 +330,7 @@ module Nokogiri
       ###
       # Returns true if this Node matches +selector+
       def matches? selector
-        document.search(selector).include?(self)
+        ancestors.last.search(selector).include?(self)
       end
 
       ####
@@ -436,8 +486,10 @@ module Nokogiri
 
         return NodeSet.new(document, parents) unless selector
 
+        root = parents.last
+
         NodeSet.new(document, parents.find_all { |parent|
-          parent.matches?(selector)
+          root.search(selector).include?(parent)
         })
       end
 
@@ -474,16 +526,19 @@ module Nokogiri
       end
 
       ####
-      # +replace+ this Node with the +new_node+ in the Document.  The new node
-      # must be a Nokogiri::XML::Node or a non-empty String
-      def replace new_node
-        if new_node.is_a?(Document) || !new_node.is_a?(XML::Node)
-          raise ArgumentError, <<-EOERR
-Node.replace requires a Node argument, and cannot accept a Document.
-(You probably want to select a node from the Document with at() or search(), or create a new Node via Node.new().)
-          EOERR
+      # +replace+ this Node with the +node+ in the Document.
+      # The new node must be a Nokogiri::XML::Node or a non-empty String.
+      # Returns the new child node.
+      def replace node
+        Node.verify_nodeishness(node)
+        if node.type == DOCUMENT_FRAG_NODE
+          node.children.each do |child|
+            add_previous_sibling child
+          end
+          unlink
+        else
+          replace_node node
         end
-        replace_with_node new_node
       end
 
       ###
@@ -658,6 +713,15 @@ Node.replace requires a Node argument, and cannot accept a Document.
       end
 
       private
+      def self.verify_nodeishness(node)
+        if node.is_a?(Document) || !node.is_a?(XML::Node)
+          raise ArgumentError, <<-EOERR
+Node.replace requires a Node argument, and cannot accept a Document.
+(You probably want to select a node from the Document with at() or search(), or create a new Node via Node.new().)
+          EOERR
+        end
+      end
+
       def inspect_attributes
         [:name, :namespace, :attribute_nodes, :children]
       end

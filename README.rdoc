@@ -1,6 +1,6 @@
 = Nokogiri
 
-* http://nokogiri.org/
+* http://nokogiri.org
 * http://github.com/tenderlove/nokogiri/wikis
 * http://github.com/tenderlove/nokogiri/tree/master
 * http://groups.google.com/group/nokogiri-talk
@@ -81,6 +81,13 @@ The IRC channel is #nokogiri on freenode.
 == INSTALL:
 
 * sudo gem install nokogiri
+
+
+=== Binary packages
+
+Binary packages are available for:
+
+  * SuSE[http://download.opensuse.org/repositories/devel:/languages:/ruby:/extensions/]
 
 == DEVELOPMENT:
 

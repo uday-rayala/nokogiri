@@ -217,8 +217,8 @@ module Nokogiri
 
       ###
       # Get the inner html of all contained Node objects
-      def inner_html
-        collect{|j| j.inner_html}.join('')
+      def inner_html *args
+        collect{|j| j.inner_html(*args) }.join('')
       end
 
       ###
@@ -293,6 +293,17 @@ module Nokogiri
       # the NodeSet
       def children
         inject(NodeSet.new(document)) { |set, node| set += node.children }
+      end
+
+      ###
+      # Returns a new NodeSet containing all the nodes in the NodeSet
+      # in reverse order
+      def reverse
+        node_set = NodeSet.new(document)
+        (length - 1).downto(0) do |x|
+          node_set.push self[x]
+        end
+        node_set
       end
 
       ###

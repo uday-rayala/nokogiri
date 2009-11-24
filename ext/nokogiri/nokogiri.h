@@ -68,6 +68,9 @@ int is_2_6_16(void) ;
   rb_str_new((const char *)str, (long)len)
 #endif
 
+#define RBSTR_OR_QNIL(_str) \
+  (_str ? NOKOGIRI_STR_NEW2(_str) : Qnil)
+
 #include <xml_io.h>
 #include <xml_document.h>
 #include <html_entity_lookup.h>
@@ -99,6 +102,7 @@ int is_2_6_16(void) ;
 #include <xml_relax_ng.h>
 #include <html_element_description.h>
 #include <xml_namespace.h>
+#include <xml_encoding_handler.h>
 
 extern VALUE mNokogiri ;
 extern VALUE mNokogiriXml ;
@@ -111,7 +115,6 @@ extern VALUE mNokogiriXslt ;
   ({ \
     nokogiriTuplePtr tuple = (nokogiriTuplePtr)(_node->doc->_private);       \
     st_insert(tuple->unlinkedNodes, (st_data_t)_node, (st_data_t)_node);     \
-    _node; \
   })
 
 #ifdef DEBUG

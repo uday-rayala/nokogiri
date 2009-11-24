@@ -242,7 +242,7 @@ static VALUE get_description(VALUE klass, SEL sel, VALUE tag_name)
   );
 
   if(NULL == description) return Qnil;
-  return Data_Wrap_Struct(klass, 0, 0, description);
+  return Data_Wrap_Struct(klass, 0, 0, (void *)description);
 }
 
 VALUE cNokogiriHtmlElementDescription ;

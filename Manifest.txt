@@ -6,6 +6,7 @@ README.ja.rdoc
 README.rdoc
 Rakefile
 bin/nokogiri
+deps.rip
 ext/nokogiri/extconf.rb
 ext/nokogiri/html_document.c
 ext/nokogiri/html_document.h
@@ -35,6 +36,8 @@ ext/nokogiri/xml_element_content.c
 ext/nokogiri/xml_element_content.h
 ext/nokogiri/xml_element_decl.c
 ext/nokogiri/xml_element_decl.h
+ext/nokogiri/xml_encoding_handler.c
+ext/nokogiri/xml_encoding_handler.h
 ext/nokogiri/xml_entity_decl.c
 ext/nokogiri/xml_entity_decl.h
 ext/nokogiri/xml_entity_reference.c
@@ -83,6 +86,7 @@ lib/nokogiri/css/tokenizer.rb
 lib/nokogiri/css/tokenizer.rex
 lib/nokogiri/css/xpath_visitor.rb
 lib/nokogiri/decorators/slop.rb
+lib/nokogiri/ffi/encoding_handler.rb
 lib/nokogiri/ffi/html/document.rb
 lib/nokogiri/ffi/html/element_description.rb
 lib/nokogiri/ffi/html/entity_lookup.rb
@@ -96,6 +100,7 @@ lib/nokogiri/ffi/structs/xml_alloc.rb
 lib/nokogiri/ffi/structs/xml_attr.rb
 lib/nokogiri/ffi/structs/xml_attribute.rb
 lib/nokogiri/ffi/structs/xml_buffer.rb
+lib/nokogiri/ffi/structs/xml_char_encoding_handler.rb
 lib/nokogiri/ffi/structs/xml_document.rb
 lib/nokogiri/ffi/structs/xml_dtd.rb
 lib/nokogiri/ffi/structs/xml_element.rb
@@ -229,7 +234,7 @@ test/html/test_node.rb
 test/html/test_node_encoding.rb
 test/test_convert_xpath.rb
 test/test_css_cache.rb
-test/test_gc.rb
+test/test_encoding_handler.rb
 test/test_memory_leak.rb
 test/test_nokogiri.rb
 test/test_reader.rb
@@ -257,6 +262,7 @@ test/xml/test_namespace.rb
 test/xml/test_node.rb
 test/xml/test_node_attributes.rb
 test/xml/test_node_encoding.rb
+test/xml/test_node_reparenting.rb
 test/xml/test_node_set.rb
 test/xml/test_parse_options.rb
 test/xml/test_processing_instruction.rb

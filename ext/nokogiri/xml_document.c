@@ -262,7 +262,7 @@ static VALUE duplicate_node(int argc, VALUE *argv, VALUE self)
   if(dup == NULL) return Qnil;
 
   dup->type = doc->type;
-  return Nokogiri_wrap_xml_document(RBASIC(self)->klass, dup);
+  return Nokogiri_wrap_xml_document(rb_obj_class(self), dup);
 }
 
 /*
@@ -277,9 +277,7 @@ static VALUE new(VALUE klass, SEL sel, int argc, VALUE *argv)
 
   rb_scan_args(argc, argv, "0*", &rest);
   version = rb_ary_entry(rest, (long)0);
-  if (NIL_P(Qnil)) {
-    version = rb_str_new2("1.0");
-  }
+  if (NIL_P(version)) version = rb_str_new2("1.0");
 
   xmlDocPtr doc = xmlNewDoc((xmlChar *)StringValuePtr(version));
   rb_doc = Nokogiri_wrap_xml_document(klass, doc);
@@ -329,7 +327,8 @@ VALUE remove_namespaces_bang(VALUE self)
   xmlDocPtr doc ;
   Data_Get_Struct(self, xmlDoc, doc);
 
-  recursively_remove_namespaces_from_node(doc);
+  recursively_remove_namespaces_from_node((xmlNodePtr)doc);
+  return self;
 }
 
 
@@ -383,6 +382,8 @@ VALUE Nokogiri_wrap_xml_document(VALUE klass, xmlDocPtr doc)
   tuple->unlinkedNodes = st_init_numtable_with_size(128);
   tuple->node_cache = cache;
   doc->_private = tuple ;
+
+  rb_obj_call_init(rb_doc, 0, NULL);
 
   return rb_doc ;
 }

@@ -35,8 +35,10 @@ static VALUE native_write(VALUE self, SEL sel, VALUE _chunk, VALUE _last_chunk)
   }
 
   if(xmlParseChunk(ctx, chunk, size, Qtrue == _last_chunk ? 1 : 0)) {
-    xmlErrorPtr e = xmlCtxtGetLastError(ctx);
-    Nokogiri_error_raise(NULL, e);
+    if (!(ctx->options & XML_PARSE_RECOVER)) {
+      xmlErrorPtr e = xmlCtxtGetLastError(ctx);
+      Nokogiri_error_raise(NULL, e);
+    }
   }
 
   return self;
@@ -73,6 +75,25 @@ static VALUE initialize_native(VALUE self, SEL sel, VALUE _xml_sax, VALUE _filen
   ctx->sax2 = 1;
   DATA_PTR(self) = ctx;
   return self;
+}
+
+static VALUE get_options(VALUE self)
+{
+  xmlParserCtxtPtr ctx;
+  Data_Get_Struct(self, xmlParserCtxt, ctx);
+
+  return INT2NUM(ctx->options);
+}
+
+static VALUE set_options(VALUE self, VALUE options)
+{
+  xmlParserCtxtPtr ctx;
+  Data_Get_Struct(self, xmlParserCtxt, ctx);
+
+  if (xmlCtxtUseOptions(ctx, (int)NUM2INT(options)) != 0)
+    rb_raise(rb_eRuntimeError, "Cannot set XML parser context options");
+
+  return Qnil;
 }
 
 VALUE cNokogiriXmlSaxPushParser ;

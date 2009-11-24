@@ -6,7 +6,7 @@ class TestNokogiri < Nokogiri::TestCase
     assert_match version_match, Nokogiri::VERSION
     assert_match version_match, Nokogiri::LIBXML_VERSION
 
-    if defined?(FFI)
+    if defined?(FFI) && defined?(Nokogiri::LibXML)
       assert_equal 'ffi', Nokogiri::VERSION_INFO['libxml']['binding']
       if RUBY_PLATFORM =~ /java/
         assert_equal 'jruby', Nokogiri::VERSION_INFO['libxml']['platform']
@@ -28,6 +28,10 @@ class TestNokogiri < Nokogiri::TestCase
     minor = $2.to_i
     bug   = $3.to_i
     assert_equal "#{major}.#{minor}.#{bug}", Nokogiri::VERSION_INFO['libxml']['loaded']
+  end
+
+  def test_libxml_iconv
+    assert Nokogiri.const_defined?(:LIBXML_ICONV_ENABLED)
   end
 
   def test_parse_with_io

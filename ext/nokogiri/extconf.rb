@@ -4,6 +4,8 @@ ENV['RC_ARCHS'] = '' if RUBY_PLATFORM =~ /darwin/
 
 require 'mkmf'
 
+RbConfig::MAKEFILE_CONFIG['CC'] = ENV['CC'] if ENV['CC']
+
 ROOT = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
 LIBDIR = Config::CONFIG['libdir']
 INCLUDEDIR = Config::CONFIG['includedir']
@@ -13,6 +15,8 @@ if defined?(RUBY_ENGINE) && RUBY_ENGINE == 'macruby'
 end
 
 $CFLAGS << " #{ENV["CFLAGS"]}"
+$LIBS << " #{ENV["LIBS"]}"
+
 if Config::CONFIG['target_os'] == 'mingw32'
   $CFLAGS << " -DXP_WIN -DXP_WIN32 -DUSE_INCLUDED_VASPRINTF"
 elsif Config::CONFIG['target_os'] == 'solaris2'

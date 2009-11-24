@@ -3,8 +3,12 @@ module Nokogiri
   module LibXML
     extend FFI::Library
     if RUBY_PLATFORM =~ /java/ && java.lang.System.getProperty('os.name') =~ /windows/i
-      raise(RuntimeError, "Nokogiri requires JRuby 1.4.0RC1 or later on Windows") if JRUBY_VERSION < "1.4.0RC1"
-      ffi_lib 'libxml2', 'libxslt', 'libexslt', 'msvcrt'
+      raise(RuntimeError, "Nokogiri requires JRuby 1.4.0 or later on Windows") if JRUBY_VERSION < "1.4.0"
+      dll_dir = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "ext", "nokogiri"))
+      libs = ["libxml2.dll", "libxslt.dll", "libexslt.dll"].collect do |lib|
+        File.join(dll_dir, lib).tr("/","\\") # see http://jira.codehaus.org/browse/JRUBY-2763
+      end + ["msvcrt"]
+      ffi_lib *libs
     else
       ffi_lib 'xml2', 'xslt', 'exslt'
     end
@@ -18,6 +22,8 @@ module Nokogiri
 
   LIBXML_PARSER_VERSION = LibXML.__xmlParserVersion().read_pointer.read_string
   LIBXML_VERSION = LIBXML_PARSER_VERSION.scan(/^(.*)(..)(..)$/).first.collect{|j|j.to_i}.join(".")
+
+  LIBXML_ICONV_ENABLED = true # sigh.
 end
 
 require 'nokogiri/version'
@@ -34,6 +40,8 @@ end
 
 module Nokogiri
   module LibXML
+    XML_CHAR_ENCODING_ERROR = -1
+
     # useful callback signatures
     callback :syntax_error_handler, [:pointer, :pointer], :void
     callback :generic_error_handler, [:pointer, :string], :void
@@ -54,6 +62,12 @@ module Nokogiri
     callback :cdata_block_sax_func, [:pointer, :string, :int], :void
     callback :start_element_ns_sax2_func, [:pointer, :pointer, :pointer, :pointer, :int, :pointer, :int, :int, :pointer], :void
     callback :end_element_ns_sax2_func, [:pointer, :pointer, :pointer, :pointer], :void
+
+    # encoding.c
+    attach_function :xmlFindCharEncodingHandler, [:string], :pointer
+    attach_function :xmlDelEncodingAlias, [:string], :int
+    attach_function :xmlAddEncodingAlias, [:string, :string], :int
+    attach_function :xmlCleanupEncodingAliases, [], :void
 
     # HTMLparser.c
     attach_function :htmlReadMemory, [:string, :int, :string, :string, :int], :pointer
@@ -86,6 +100,7 @@ module Nokogiri
     attach_function :xmlFreeParserCtxt, [:pointer], :void
     attach_function :xmlCreatePushParserCtxt, [:pointer, :pointer, :string, :int, :string], :pointer
     attach_function :xmlParseChunk, [:pointer, :string, :int, :int], :int
+    attach_function :xmlCtxtUseOptions, [:pointer, :int], :int
 
     # tree.c
     attach_function :xmlNewDoc, [:string], :pointer
@@ -275,6 +290,9 @@ module Nokogiri
     attach_function :calloc, [:int, :int], :pointer
     attach_function :free, [:pointer], :void
 
+    attach_function :xmlParseCharEncoding, [:string], :int
+    attach_function :xmlSwitchEncoding, [:pointer, :int], :void
+
     # helpers
     def self.pointer_offset(n)
       n * FFI.type_size(:pointer) # byte offset of nth pointer in an array of pointers
@@ -288,8 +306,10 @@ require 'nokogiri/syntax_error'
 require 'nokogiri/xml/syntax_error'
 
 [ "io_callbacks",
+  "encoding_handler",
   "structs/common_node",
   "structs/xml_alloc",
+  "structs/xml_char_encoding_handler",
   "structs/xml_document",
   "structs/xml_node",
   "structs/xml_dtd",

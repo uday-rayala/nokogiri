@@ -18,7 +18,7 @@ static VALUE new(VALUE klass, SEL sel, int argc, VALUE *argv)
   Data_Get_Struct(document, xmlDoc, doc);
 
   xmlNodePtr node = xmlNewText((xmlChar *)StringValuePtr(string));
-  node->doc = doc;
+  node->doc = doc->doc;
 
   VALUE rb_node = Nokogiri_wrap_xml_node(klass, node) ;
   rb_obj_call_init(rb_node, argc, argv);

@@ -24,6 +24,17 @@ static VALUE parse_memory(VALUE klass, SEL sel, VALUE data, VALUE encoding)
       (int)RSTRING_LEN(data)
   );
 
+  if(RTEST(encoding)) {
+    xmlCharEncoding enc = xmlParseCharEncoding(StringValuePtr(encoding));
+    if(enc != XML_CHAR_ENCODING_ERROR) {
+      xmlSwitchEncoding(ctxt, enc);
+      if(ctxt->errNo == XML_ERR_UNSUPPORTED_ENCODING) {
+        rb_raise(rb_eRuntimeError, "Unsupported encoding %s",
+            StringValuePtr(encoding));
+      }
+    }
+  }
+
   return Data_Wrap_Struct(klass, NULL, deallocate, ctxt);
 }
 
@@ -59,6 +70,7 @@ static VALUE parse_with(VALUE self, SEL sel, VALUE sax_handler)
   if(NULL != ctxt->myDoc) xmlFreeDoc(ctxt->myDoc);
 
   NOKOGIRI_SAX_TUPLE_DESTROY(ctxt->userData);
+  return self;
 }
 
 void init_html_sax_parser_context()

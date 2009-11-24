@@ -10,6 +10,17 @@ module Nokogiri
         @xml = Nokogiri::XML.parse(File.read(XML_FILE), XML_FILE)
       end
 
+      def test_subclass_initialize_modify # testing a segv
+        Class.new(Nokogiri::XML::Document) {
+          def initialize
+            super
+            body_node = Nokogiri::XML::Node.new "body", self
+            body_node.content = "stuff"
+            self.root = body_node
+          end
+        }.new
+      end
+
       def test_create_text_node
         txt = @xml.create_text_node 'foo'
         assert_instance_of Nokogiri::XML::Text, txt
@@ -85,6 +96,12 @@ module Nokogiri
         assert_equal '1.0', @xml.version
       end
 
+      def test_add_namespace
+        assert_raise NoMethodError do
+          @xml.add_namespace('foo', 'bar')
+        end
+      end
+
       def test_attributes
         assert_raise NoMethodError do
           @xml.attributes
@@ -119,12 +136,20 @@ module Nokogiri
         assert_equal 0, fragment.children.length
       end
 
-      def test_add_child_with_fragment
+      def test_add_child_fragment_with_single_node
         doc = Nokogiri::XML::Document.new
         fragment = doc.fragment('<hello />')
         doc.add_child fragment
         assert_equal '/hello', doc.at('//hello').path
         assert_equal 'hello', doc.root.name
+      end
+
+      def test_add_child_fragment_with_multiple_nodes
+        doc = Nokogiri::XML::Document.new
+        fragment = doc.fragment('<hello /><goodbye />')
+        assert_raises(RuntimeError) do
+          doc.add_child fragment
+        end
       end
 
       def test_add_child_with_multiple_roots
