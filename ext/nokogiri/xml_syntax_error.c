@@ -22,16 +22,16 @@ VALUE Nokogiri_wrap_xml_syntax_error(VALUE klass, xmlErrorPtr error)
       &msg,
       klass
   );
-  rb_iv_set(e, "@domain", INT2NUM(error->domain));
-  rb_iv_set(e, "@code", INT2NUM(error->code));
-  rb_iv_set(e, "@level", INT2NUM((short)error->level));
-  rb_iv_set(e, "@file", RBSTR_OR_QNIL(error->file));
-  rb_iv_set(e, "@line", INT2NUM(error->line));
-  rb_iv_set(e, "@str1", RBSTR_OR_QNIL(error->str1));
-  rb_iv_set(e, "@str2", RBSTR_OR_QNIL(error->str2));
-  rb_iv_set(e, "@str3", RBSTR_OR_QNIL(error->str3));
-  rb_iv_set(e, "@int1", INT2NUM(error->int1));
-  rb_iv_set(e, "@column", INT2NUM(error->int2));
+  rb_ivar_set(e, "@domain", INT2NUM(error->domain));
+  rb_ivar_set(e, "@code", INT2NUM(error->code));
+  rb_ivar_set(e, "@level", INT2NUM((short)error->level));
+  rb_ivar_set(e, "@file", RBSTR_OR_QNIL(error->file));
+  rb_ivar_set(e, "@line", INT2NUM(error->line));
+  rb_ivar_set(e, "@str1", RBSTR_OR_QNIL(error->str1));
+  rb_ivar_set(e, "@str2", RBSTR_OR_QNIL(error->str2));
+  rb_ivar_set(e, "@str3", RBSTR_OR_QNIL(error->str3));
+  rb_ivar_set(e, "@int1", INT2NUM(error->int1));
+  rb_ivar_set(e, "@column", INT2NUM(error->int2));
 
   return e;
 }
