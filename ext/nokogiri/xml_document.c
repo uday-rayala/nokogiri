@@ -25,7 +25,7 @@ static void dealloc(xmlDocPtr doc)
   st_foreach(node_hash, dealloc_node_i, (st_data_t)doc);
   st_free_table(node_hash);
 
-  free(doc->_private);
+  xmlFree(doc->_private);
   doc->_private = NULL;
   xmlFreeDoc(doc);
 
@@ -322,7 +322,7 @@ static VALUE new(VALUE klass, SEL sel, int argc, VALUE *argv)
  *  please direct your browser to
  *  http://tenderlovemaking.com/2009/04/23/namespaces-in-xml/
  */
-VALUE remove_namespaces_bang(VALUE self)
+VALUE remove_namespaces_bang(VALUE self, SEL sel)
 {
   xmlDocPtr doc ;
   Data_Get_Struct(self, xmlDoc, doc);
@@ -364,7 +364,7 @@ void init_xml_document()
 /* this takes klass as a param because it's used for HtmlDocument, too. */
 VALUE Nokogiri_wrap_xml_document(VALUE klass, xmlDocPtr doc)
 {
-  nokogiriTuplePtr tuple = (nokogiriTuplePtr)malloc(sizeof(nokogiriTuple));
+  nokogiriTuplePtr tuple = (nokogiriTuplePtr)xmlMalloc(sizeof(nokogiriTuple));
 
   VALUE rb_doc = Data_Wrap_Struct(
       klass ? klass : cNokogiriXmlDocument,
@@ -376,7 +376,6 @@ VALUE Nokogiri_wrap_xml_document(VALUE klass, xmlDocPtr doc)
   VALUE cache = rb_ary_new();
   rb_ivar_set(rb_doc, "@decorators", Qnil);
   rb_ivar_set(rb_doc, "@node_cache", cache);
-  rb_obj_call_init(rb_doc, 0, NULL);
 
   tuple->doc = (void *)rb_doc;
   tuple->unlinkedNodes = st_init_numtable_with_size(128);
@@ -384,6 +383,10 @@ VALUE Nokogiri_wrap_xml_document(VALUE klass, xmlDocPtr doc)
   doc->_private = tuple ;
 
   rb_obj_call_init(rb_doc, 0, NULL);
+
+  //// FIXME: MACRUBY for some reason, if I don't set this after the
+  //// init call, the pointer gets cleared.  wtf
+  doc->_private = tuple ;
 
   return rb_doc ;
 }

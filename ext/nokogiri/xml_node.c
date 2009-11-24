@@ -370,7 +370,7 @@ static VALUE previous_sibling(VALUE self, SEL sel)
   return Nokogiri_wrap_xml_node(Qnil, sibling);
 }
 
-static VALUE replace(VALUE self, SEL sel, VALUE _new_node)
+static VALUE next_element(VALUE self, SEL sel)
 {
   xmlNodePtr node, sibling;
   Data_Get_Struct(self, xmlNode, node);
@@ -385,7 +385,7 @@ static VALUE replace(VALUE self, SEL sel, VALUE _new_node)
 }
 
 /* :nodoc: */
-static VALUE replace(VALUE self, VALUE _new_node)
+static VALUE replace(VALUE self, SEL sel, VALUE _new_node)
 {
   reparent_node_with(_new_node, self, xmlReplaceNodeWrapper) ;
   return self ;
