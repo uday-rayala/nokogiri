@@ -622,6 +622,31 @@ static VALUE from_io(int argc, VALUE *argv, VALUE klass)
 
 /*
  * call-seq:
+ *   reader.expand # => #<Nokogiri::XML::Node>
+ *
+ * Returns an expanded subtree of the reader
+ */
+static VALUE expand(VALUE self)
+{
+  xmlTextReaderPtr reader;
+  xmlNodePtr node;
+
+  Data_Get_Struct(self, xmlTextReader, reader);
+
+  node = xmlTextReaderExpand(reader);
+
+  assert(node->doc);
+
+  if(!node->doc->_private)
+    Nokogiri_wrap_xml_document(cNokogiriXmlDocument, node->doc);
+
+  if(node) return Nokogiri_wrap_xml_node(Qnil, node);
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
  *   reader.empty_element? # => true or false
  *
  * Returns true if the current node is empty, otherwise false.
@@ -668,6 +693,7 @@ void init_xml_reader()
   rb_define_method(klass, "prefix", prefix, 0);
   rb_define_method(klass, "value", value, 0);
   rb_define_method(klass, "lang", lang, 0);
+  rb_define_method(klass, "expand", expand, 0);
   rb_define_method(klass, "xml_version", xml_version, 0);
   rb_define_method(klass, "depth", depth, 0);
   rb_define_method(klass, "attribute_count", attribute_count, 0);

@@ -2,6 +2,18 @@
 require "helper"
 
 class TestReader < Nokogiri::TestCase
+  def test_expand
+    io = File.open XML_FILE
+    reader = Nokogiri::XML::Reader.from_io(io)
+    names = []
+    reader.each do |cursor|
+      if 'employee' == cursor.name
+        node = cursor.expand
+        assert_instance_of(Nokogiri::XML::Element, node)
+      end
+    end
+  end
+
   def test_from_io_sets_io_as_source
     io = File.open SNUGGLES_FILE
     reader = Nokogiri::XML::Reader.from_io(io)
