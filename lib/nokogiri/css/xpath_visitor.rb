@@ -1,3 +1,5 @@
+# see http://www.mail-archive.com/www-archive@w3.org/msg00906.html for some explanations
+
 module Nokogiri
   module CSS
     class XPathVisitor # :nodoc:

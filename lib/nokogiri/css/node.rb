@@ -53,11 +53,11 @@ module Nokogiri
         ])
         matches.each do |match|
           if ['first-child', 'last-child'].include?(match.value[1].value.first)
-            which = match.value[1].value.first.gsub(/-\w*$/, '')
+            first_or_last = match.value[1].value.first.gsub(/-\w*$/, '')
             tag_name = match.value[0].value.first
             match.value[0].value = ['*']
             match.value[1] = Node.new(:COMBINATOR, [
-              Node.new(:FUNCTION, ["#{which}("]),
+              Node.new(:FUNCTION, ["#{first_or_last}("]),
               Node.new(:FUNCTION, ['self(', tag_name])
             ])
           elsif 'only-child' == match.value[1].value.first
