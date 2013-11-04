@@ -1,0 +1,27 @@
+From 0b86537dfa3b0039136ced49c6aab8e50234923f Mon Sep 17 00:00:00 2001
+From: Alexey Neyman <stilor@att.net>
+Date: Mon, 6 May 2013 10:20:18 +0800
+Subject: [PATCH 06/35] Remove premature XInclude check on URI being relative
+
+As it gives false negatives, see
+  https://mail.gnome.org/archives/xml/2013-April/msg00023.html
+---
+ xinclude.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/xinclude.c b/xinclude.c
+index ace005b..107ac03 100644
+--- a/xinclude.c
++++ b/xinclude.c
+@@ -1687,7 +1687,7 @@ loaded:
+     /*
+      * Do the xml:base fixup if needed
+      */
+-    if ((doc != NULL) && (URL != NULL) && (xmlStrchr(URL, (xmlChar) '/')) &&
++    if ((doc != NULL) && (URL != NULL) &&
+         (!(ctxt->parseFlags & XML_PARSE_NOBASEFIX)) &&
+ 	(!(doc->parseFlags & XML_PARSE_NOBASEFIX))) {
+ 	xmlNodePtr node;
+-- 
+1.8.4.1
+

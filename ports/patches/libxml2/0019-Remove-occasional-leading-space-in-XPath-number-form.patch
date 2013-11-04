@@ -1,0 +1,33 @@
+From b9e4d5b6395f9aa0a34cb74e9a3672a20d37b943 Mon Sep 17 00:00:00 2001
+From: Daniel Veillard <veillard@redhat.com>
+Date: Mon, 22 Jul 2013 13:21:31 +0800
+Subject: [PATCH 19/35] Remove occasional leading space in XPath number
+ formatting
+
+https://bugzilla.gnome.org/show_bug.cgi?id=704528
+
+Somehow snprintf "%*.*e" can generate a leading space, remove it
+---
+ xpath.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/xpath.c b/xpath.c
+index 97410e7..4fa53df 100644
+--- a/xpath.c
++++ b/xpath.c
+@@ -2885,6 +2885,12 @@ xmlXPathFormatNumber(double number, char buffer[], int buffersize)
+ 				fraction_place, number);
+ 	    }
+ 
++	    /* Remove leading spaces sometimes inserted by snprintf */
++	    while (work[0] == ' ') {
++	        for (ptr = &work[0];(ptr[0] = ptr[1]);ptr++);
++		size--;
++	    }
++
+ 	    /* Remove fractional trailing zeroes */
+ 	    after_fraction = work + size;
+ 	    ptr = after_fraction;
+-- 
+1.8.4.1
+

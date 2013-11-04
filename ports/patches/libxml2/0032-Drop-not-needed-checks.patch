@@ -1,0 +1,73 @@
+From 0146179120d4f1162f0400a0131bea2e5d600155 Mon Sep 17 00:00:00 2001
+From: Denis Pauk <pauk.denis@gmail.com>
+Date: Tue, 6 Aug 2013 09:55:55 +0300
+Subject: [PATCH 32/35] Drop not needed checks
+
+https://bugzilla.gnome.org/show_bug.cgi?id=704075
+---
+ valid.c | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
+
+diff --git a/valid.c b/valid.c
+index e0832e7..d3c706b 100644
+--- a/valid.c
++++ b/valid.c
+@@ -2740,23 +2740,24 @@ xmlRemoveID(xmlDocPtr doc, xmlAttrPtr attr) {
+ 
+     if (doc == NULL) return(-1);
+     if (attr == NULL) return(-1);
++
+     table = (xmlIDTablePtr) doc->ids;
+     if (table == NULL)
+         return(-1);
+ 
+-    if (attr == NULL)
+-	return(-1);
+     ID = xmlNodeListGetString(doc, attr->children, 1);
+     if (ID == NULL)
+-	return(-1);
++        return(-1);
++
+     id = xmlHashLookup(table, ID);
+     if (id == NULL || id->attr != attr) {
+-	xmlFree(ID);
+-	return(-1);
++        xmlFree(ID);
++        return(-1);
+     }
++
+     xmlHashRemoveEntry(table, ID, (xmlHashDeallocator) xmlFreeID);
+     xmlFree(ID);
+-	attr->atype = 0;
++    attr->atype = 0;
+     return(0);
+ }
+ 
+@@ -3059,21 +3060,21 @@ xmlRemoveRef(xmlDocPtr doc, xmlAttrPtr attr) {
+ 
+     if (doc == NULL) return(-1);
+     if (attr == NULL) return(-1);
++
+     table = (xmlRefTablePtr) doc->refs;
+     if (table == NULL)
+         return(-1);
+ 
+-    if (attr == NULL)
+-        return(-1);
+     ID = xmlNodeListGetString(doc, attr->children, 1);
+     if (ID == NULL)
+         return(-1);
+-    ref_list = xmlHashLookup(table, ID);
+ 
++    ref_list = xmlHashLookup(table, ID);
+     if(ref_list == NULL) {
+         xmlFree(ID);
+         return (-1);
+     }
++
+     /* At this point, ref_list refers to a list of references which
+      * have the same key as the supplied attr. Our list of references
+      * is ordered by reference address and we don't have that information
+-- 
+1.8.4.1
+

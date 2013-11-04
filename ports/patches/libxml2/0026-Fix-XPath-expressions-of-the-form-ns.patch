@@ -1,0 +1,33 @@
+From e8de99f90cde4832065d7a87d74393a46c191d0b Mon Sep 17 00:00:00 2001
+From: Nick Wellnhofer <wellnhofer@aevum.de>
+Date: Mon, 5 Aug 2013 01:26:25 +0200
+Subject: [PATCH 26/35] Fix XPath expressions of the form '@ns:*'
+
+Use namespace for match-all queries on the attribute axis.
+---
+ xpath.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/xpath.c b/xpath.c
+index 09adb00..b4cdcdc 100644
+--- a/xpath.c
++++ b/xpath.c
+@@ -12425,7 +12425,14 @@ xmlXPathNodeCollectAndTest(xmlXPathParserContextPtr ctxt,
+                     if (axis == AXIS_ATTRIBUTE) {
+                         if (cur->type == XML_ATTRIBUTE_NODE)
+ 			{
+-			    XP_TEST_HIT
++                            if (prefix == NULL)
++			    {
++				XP_TEST_HIT
++                            } else if ((cur->ns != NULL) &&
++				(xmlStrEqual(URI, cur->ns->href)))
++			    {
++				XP_TEST_HIT
++                            }
+                         }
+                     } else if (axis == AXIS_NAMESPACE) {
+                         if (cur->type == XML_NAMESPACE_DECL)
+-- 
+1.8.4.1
+

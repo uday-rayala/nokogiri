@@ -1,0 +1,28 @@
+From e71dce18a1a72578581d4e91c24a44eead0d5949 Mon Sep 17 00:00:00 2001
+From: Daniel Veillard <veillard@redhat.com>
+Date: Thu, 11 Jul 2013 15:41:22 +0800
+Subject: [PATCH 15/35] Catch malloc error and exit accordingly
+
+As pointed privately by Bill Parker <wp02855@gmail.com>
+---
+ xmllint.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/xmllint.c b/xmllint.c
+index c0196ab..4d464e4 100644
+--- a/xmllint.c
++++ b/xmllint.c
+@@ -3090,6 +3090,10 @@ static void usage(const char *name) {
+ static void registerNode(xmlNodePtr node)
+ {
+     node->_private = malloc(sizeof(long));
++    if (node->_private == NULL) {
++        fprintf(stderr, "Out of memory in xmllint:registerNode()\n");
++	exit(XMLLINT_ERR_MEM);
++    }
+     *(long*)node->_private = (long) 0x81726354;
+     nbregister++;
+ }
+-- 
+1.8.4.1
+

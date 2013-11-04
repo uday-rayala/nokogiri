@@ -1,0 +1,882 @@
+From e28c8a1acef3047cceae1035924edae5e903a778 Mon Sep 17 00:00:00 2001
+From: Denis Pauk <pauk.denis@gmail.com>
+Date: Sat, 3 Aug 2013 14:22:54 +0300
+Subject: [PATCH 22/35] #705267 - add additional defines checks for support
+ "./configure --with-minimum"
+
+ https://bugzilla.gnome.org/show_bug.cgi?id=705267
+---
+ encoding.c   |   2 +
+ testlimits.c |   6 +
+ xpath.c      | 727 +++++++++++++++++++++++++++++------------------------------
+ 3 files changed, 371 insertions(+), 364 deletions(-)
+
+diff --git a/encoding.c b/encoding.c
+index 7330e90..d17a53b 100644
+--- a/encoding.c
++++ b/encoding.c
+@@ -2384,6 +2384,7 @@ xmlCharEncInFunc(xmlCharEncodingHandler * handler, xmlBufferPtr out,
+     return (written? written : ret);
+ }
+ 
++#ifdef LIBXML_OUTPUT_ENABLED
+ /**
+  * xmlCharEncOutput:
+  * @output: a parser output buffer
+@@ -2612,6 +2613,7 @@ retry:
+     }
+     return(ret);
+ }
++#endif
+ 
+ /**
+  * xmlCharEncOutFunc:
+diff --git a/testlimits.c b/testlimits.c
+index 41994c4..609064d 100644
+--- a/testlimits.c
++++ b/testlimits.c
+@@ -1512,6 +1512,7 @@ launchCrazySAX(unsigned int test, int fail) {
+     return(err);
+ }
+ 
++#ifdef LIBXML_READER_ENABLED
+ static int
+ launchCrazy(unsigned int test, int fail) {
+     int res = 0, err = 0;
+@@ -1528,6 +1529,7 @@ launchCrazy(unsigned int test, int fail) {
+ 
+     return(err);
+ }
++#endif
+ 
+ static int get_crazy_fail(int test) {
+     /*
+@@ -1565,6 +1567,8 @@ runcrazy(void) {
+     old_errors = nb_errors;
+     old_tests = nb_tests;
+     old_leaks = nb_leaks;
++
++#ifdef LIBXML_READER_ENABLED
+     if (tests_quiet == 0) {
+ 	printf("## Crazy tests on reader\n");
+     }
+@@ -1573,6 +1577,8 @@ runcrazy(void) {
+         if (res != 0)
+             ret++;
+     }
++#endif
++
+     if (tests_quiet == 0) {
+ 	printf("\n## Crazy tests on SAX\n");
+     }
+diff --git a/xpath.c b/xpath.c
+index 4fa53df..fc9eabb 100644
+--- a/xpath.c
++++ b/xpath.c
+@@ -135,6 +135,298 @@
+  * any use of the macros IS_ASCII_CHARACTER and IS_ASCII_DIGIT)
+  */
+ 
++#ifdef XP_OPTIMIZED_NON_ELEM_COMPARISON
++/**
++ * xmlXPathCmpNodesExt:
++ * @node1:  the first node
++ * @node2:  the second node
++ *
++ * Compare two nodes w.r.t document order.
++ * This one is optimized for handling of non-element nodes.
++ *
++ * Returns -2 in case of error 1 if first point < second point, 0 if
++ *         it's the same node, -1 otherwise
++ */
++static int
++xmlXPathCmpNodesExt(xmlNodePtr node1, xmlNodePtr node2) {
++    int depth1, depth2;
++    int misc = 0, precedence1 = 0, precedence2 = 0;
++    xmlNodePtr miscNode1 = NULL, miscNode2 = NULL;
++    xmlNodePtr cur, root;
++    long l1, l2;
++
++    if ((node1 == NULL) || (node2 == NULL))
++	return(-2);
++
++    if (node1 == node2)
++	return(0);
++
++    /*
++     * a couple of optimizations which will avoid computations in most cases
++     */
++    switch (node1->type) {
++	case XML_ELEMENT_NODE:
++	    if (node2->type == XML_ELEMENT_NODE) {
++		if ((0 > (long) node1->content) && /* TODO: Would a != 0 suffice here? */
++		    (0 > (long) node2->content) &&
++		    (node1->doc == node2->doc))
++		{
++		    l1 = -((long) node1->content);
++		    l2 = -((long) node2->content);
++		    if (l1 < l2)
++			return(1);
++		    if (l1 > l2)
++			return(-1);
++		} else
++		    goto turtle_comparison;
++	    }
++	    break;
++	case XML_ATTRIBUTE_NODE:
++	    precedence1 = 1; /* element is owner */
++	    miscNode1 = node1;
++	    node1 = node1->parent;
++	    misc = 1;
++	    break;
++	case XML_TEXT_NODE:
++	case XML_CDATA_SECTION_NODE:
++	case XML_COMMENT_NODE:
++	case XML_PI_NODE: {
++	    miscNode1 = node1;
++	    /*
++	    * Find nearest element node.
++	    */
++	    if (node1->prev != NULL) {
++		do {
++		    node1 = node1->prev;
++		    if (node1->type == XML_ELEMENT_NODE) {
++			precedence1 = 3; /* element in prev-sibl axis */
++			break;
++		    }
++		    if (node1->prev == NULL) {
++			precedence1 = 2; /* element is parent */
++			/*
++			* URGENT TODO: Are there any cases, where the
++			* parent of such a node is not an element node?
++			*/
++			node1 = node1->parent;
++			break;
++		    }
++		} while (1);
++	    } else {
++		precedence1 = 2; /* element is parent */
++		node1 = node1->parent;
++	    }
++	    if ((node1 == NULL) || (node1->type != XML_ELEMENT_NODE) ||
++		(0 <= (long) node1->content)) {
++		/*
++		* Fallback for whatever case.
++		*/
++		node1 = miscNode1;
++		precedence1 = 0;
++	    } else
++		misc = 1;
++	}
++	    break;
++	case XML_NAMESPACE_DECL:
++	    /*
++	    * TODO: why do we return 1 for namespace nodes?
++	    */
++	    return(1);
++	default:
++	    break;
++    }
++    switch (node2->type) {
++	case XML_ELEMENT_NODE:
++	    break;
++	case XML_ATTRIBUTE_NODE:
++	    precedence2 = 1; /* element is owner */
++	    miscNode2 = node2;
++	    node2 = node2->parent;
++	    misc = 1;
++	    break;
++	case XML_TEXT_NODE:
++	case XML_CDATA_SECTION_NODE:
++	case XML_COMMENT_NODE:
++	case XML_PI_NODE: {
++	    miscNode2 = node2;
++	    if (node2->prev != NULL) {
++		do {
++		    node2 = node2->prev;
++		    if (node2->type == XML_ELEMENT_NODE) {
++			precedence2 = 3; /* element in prev-sibl axis */
++			break;
++		    }
++		    if (node2->prev == NULL) {
++			precedence2 = 2; /* element is parent */
++			node2 = node2->parent;
++			break;
++		    }
++		} while (1);
++	    } else {
++		precedence2 = 2; /* element is parent */
++		node2 = node2->parent;
++	    }
++	    if ((node2 == NULL) || (node2->type != XML_ELEMENT_NODE) ||
++		(0 <= (long) node1->content))
++	    {
++		node2 = miscNode2;
++		precedence2 = 0;
++	    } else
++		misc = 1;
++	}
++	    break;
++	case XML_NAMESPACE_DECL:
++	    return(1);
++	default:
++	    break;
++    }
++    if (misc) {
++	if (node1 == node2) {
++	    if (precedence1 == precedence2) {
++		/*
++		* The ugly case; but normally there aren't many
++		* adjacent non-element nodes around.
++		*/
++		cur = miscNode2->prev;
++		while (cur != NULL) {
++		    if (cur == miscNode1)
++			return(1);
++		    if (cur->type == XML_ELEMENT_NODE)
++			return(-1);
++		    cur = cur->prev;
++		}
++		return (-1);
++	    } else {
++		/*
++		* Evaluate based on higher precedence wrt to the element.
++		* TODO: This assumes attributes are sorted before content.
++		*   Is this 100% correct?
++		*/
++		if (precedence1 < precedence2)
++		    return(1);
++		else
++		    return(-1);
++	    }
++	}
++	/*
++	* Special case: One of the helper-elements is contained by the other.
++	* <foo>
++	*   <node2>
++	*     <node1>Text-1(precedence1 == 2)</node1>
++	*   </node2>
++	*   Text-6(precedence2 == 3)
++	* </foo>
++	*/
++	if ((precedence2 == 3) && (precedence1 > 1)) {
++	    cur = node1->parent;
++	    while (cur) {
++		if (cur == node2)
++		    return(1);
++		cur = cur->parent;
++	    }
++	}
++	if ((precedence1 == 3) && (precedence2 > 1)) {
++	    cur = node2->parent;
++	    while (cur) {
++		if (cur == node1)
++		    return(-1);
++		cur = cur->parent;
++	    }
++	}
++    }
++
++    /*
++     * Speedup using document order if availble.
++     */
++    if ((node1->type == XML_ELEMENT_NODE) &&
++	(node2->type == XML_ELEMENT_NODE) &&
++	(0 > (long) node1->content) &&
++	(0 > (long) node2->content) &&
++	(node1->doc == node2->doc)) {
++
++	l1 = -((long) node1->content);
++	l2 = -((long) node2->content);
++	if (l1 < l2)
++	    return(1);
++	if (l1 > l2)
++	    return(-1);
++    }
++
++turtle_comparison:
++
++    if (node1 == node2->prev)
++	return(1);
++    if (node1 == node2->next)
++	return(-1);
++    /*
++     * compute depth to root
++     */
++    for (depth2 = 0, cur = node2;cur->parent != NULL;cur = cur->parent) {
++	if (cur == node1)
++	    return(1);
++	depth2++;
++    }
++    root = cur;
++    for (depth1 = 0, cur = node1;cur->parent != NULL;cur = cur->parent) {
++	if (cur == node2)
++	    return(-1);
++	depth1++;
++    }
++    /*
++     * Distinct document (or distinct entities :-( ) case.
++     */
++    if (root != cur) {
++	return(-2);
++    }
++    /*
++     * get the nearest common ancestor.
++     */
++    while (depth1 > depth2) {
++	depth1--;
++	node1 = node1->parent;
++    }
++    while (depth2 > depth1) {
++	depth2--;
++	node2 = node2->parent;
++    }
++    while (node1->parent != node2->parent) {
++	node1 = node1->parent;
++	node2 = node2->parent;
++	/* should not happen but just in case ... */
++	if ((node1 == NULL) || (node2 == NULL))
++	    return(-2);
++    }
++    /*
++     * Find who's first.
++     */
++    if (node1 == node2->prev)
++	return(1);
++    if (node1 == node2->next)
++	return(-1);
++    /*
++     * Speedup using document order if availble.
++     */
++    if ((node1->type == XML_ELEMENT_NODE) &&
++	(node2->type == XML_ELEMENT_NODE) &&
++	(0 > (long) node1->content) &&
++	(0 > (long) node2->content) &&
++	(node1->doc == node2->doc)) {
++
++	l1 = -((long) node1->content);
++	l2 = -((long) node2->content);
++	if (l1 < l2)
++	    return(1);
++	if (l1 > l2)
++	    return(-1);
++    }
++
++    for (cur = node1->next;cur != NULL;cur = cur->next)
++	if (cur == node2)
++	    return(1);
++    return(-1); /* assume there is no sibling list corruption */
++}
++#endif /* XP_OPTIMIZED_NON_ELEM_COMPARISON */
++
+ /*
+  * Wrapper for the Timsort argorithm from timsort.h
+  */
+@@ -154,7 +446,6 @@
+ static
+ int wrap_cmp( xmlNodePtr x, xmlNodePtr y );
+ #ifdef XP_OPTIMIZED_NON_ELEM_COMPARISON
+-    static int xmlXPathCmpNodesExt(xmlNodePtr, xmlNodePtr);
+     static int wrap_cmp( xmlNodePtr x, xmlNodePtr y )
+     {
+         int res = xmlXPathCmpNodesExt(x, y);
+@@ -2931,390 +3222,103 @@ xmlXPathFormatNumber(double number, char buffer[], int buffersize)
+  *
+  * Returns the number of elements found in the document or -1 in case
+  *    of error.
+- */
+-long
+-xmlXPathOrderDocElems(xmlDocPtr doc) {
+-    long count = 0;
+-    xmlNodePtr cur;
+-
+-    if (doc == NULL)
+-	return(-1);
+-    cur = doc->children;
+-    while (cur != NULL) {
+-	if (cur->type == XML_ELEMENT_NODE) {
+-	    cur->content = (void *) (-(++count));
+-	    if (cur->children != NULL) {
+-		cur = cur->children;
+-		continue;
+-	    }
+-	}
+-	if (cur->next != NULL) {
+-	    cur = cur->next;
+-	    continue;
+-	}
+-	do {
+-	    cur = cur->parent;
+-	    if (cur == NULL)
+-		break;
+-	    if (cur == (xmlNodePtr) doc) {
+-		cur = NULL;
+-		break;
+-	    }
+-	    if (cur->next != NULL) {
+-		cur = cur->next;
+-		break;
+-	    }
+-	} while (cur != NULL);
+-    }
+-    return(count);
+-}
+-
+-/**
+- * xmlXPathCmpNodes:
+- * @node1:  the first node
+- * @node2:  the second node
+- *
+- * Compare two nodes w.r.t document order
+- *
+- * Returns -2 in case of error 1 if first point < second point, 0 if
+- *         it's the same node, -1 otherwise
+- */
+-int
+-xmlXPathCmpNodes(xmlNodePtr node1, xmlNodePtr node2) {
+-    int depth1, depth2;
+-    int attr1 = 0, attr2 = 0;
+-    xmlNodePtr attrNode1 = NULL, attrNode2 = NULL;
+-    xmlNodePtr cur, root;
+-
+-    if ((node1 == NULL) || (node2 == NULL))
+-	return(-2);
+-    /*
+-     * a couple of optimizations which will avoid computations in most cases
+-     */
+-    if (node1 == node2)		/* trivial case */
+-	return(0);
+-    if (node1->type == XML_ATTRIBUTE_NODE) {
+-	attr1 = 1;
+-	attrNode1 = node1;
+-	node1 = node1->parent;
+-    }
+-    if (node2->type == XML_ATTRIBUTE_NODE) {
+-	attr2 = 1;
+-	attrNode2 = node2;
+-	node2 = node2->parent;
+-    }
+-    if (node1 == node2) {
+-	if (attr1 == attr2) {
+-	    /* not required, but we keep attributes in order */
+-	    if (attr1 != 0) {
+-	        cur = attrNode2->prev;
+-		while (cur != NULL) {
+-		    if (cur == attrNode1)
+-		        return (1);
+-		    cur = cur->prev;
+-		}
+-		return (-1);
+-	    }
+-	    return(0);
+-	}
+-	if (attr2 == 1)
+-	    return(1);
+-	return(-1);
+-    }
+-    if ((node1->type == XML_NAMESPACE_DECL) ||
+-        (node2->type == XML_NAMESPACE_DECL))
+-	return(1);
+-    if (node1 == node2->prev)
+-	return(1);
+-    if (node1 == node2->next)
+-	return(-1);
+-
+-    /*
+-     * Speedup using document order if availble.
+-     */
+-    if ((node1->type == XML_ELEMENT_NODE) &&
+-	(node2->type == XML_ELEMENT_NODE) &&
+-	(0 > (long) node1->content) &&
+-	(0 > (long) node2->content) &&
+-	(node1->doc == node2->doc)) {
+-	long l1, l2;
+-
+-	l1 = -((long) node1->content);
+-	l2 = -((long) node2->content);
+-	if (l1 < l2)
+-	    return(1);
+-	if (l1 > l2)
+-	    return(-1);
+-    }
+-
+-    /*
+-     * compute depth to root
+-     */
+-    for (depth2 = 0, cur = node2;cur->parent != NULL;cur = cur->parent) {
+-	if (cur == node1)
+-	    return(1);
+-	depth2++;
+-    }
+-    root = cur;
+-    for (depth1 = 0, cur = node1;cur->parent != NULL;cur = cur->parent) {
+-	if (cur == node2)
+-	    return(-1);
+-	depth1++;
+-    }
+-    /*
+-     * Distinct document (or distinct entities :-( ) case.
+-     */
+-    if (root != cur) {
+-	return(-2);
+-    }
+-    /*
+-     * get the nearest common ancestor.
+-     */
+-    while (depth1 > depth2) {
+-	depth1--;
+-	node1 = node1->parent;
+-    }
+-    while (depth2 > depth1) {
+-	depth2--;
+-	node2 = node2->parent;
+-    }
+-    while (node1->parent != node2->parent) {
+-	node1 = node1->parent;
+-	node2 = node2->parent;
+-	/* should not happen but just in case ... */
+-	if ((node1 == NULL) || (node2 == NULL))
+-	    return(-2);
+-    }
+-    /*
+-     * Find who's first.
+-     */
+-    if (node1 == node2->prev)
+-	return(1);
+-    if (node1 == node2->next)
+-	return(-1);
+-    /*
+-     * Speedup using document order if availble.
+-     */
+-    if ((node1->type == XML_ELEMENT_NODE) &&
+-	(node2->type == XML_ELEMENT_NODE) &&
+-	(0 > (long) node1->content) &&
+-	(0 > (long) node2->content) &&
+-	(node1->doc == node2->doc)) {
+-	long l1, l2;
+-
+-	l1 = -((long) node1->content);
+-	l2 = -((long) node2->content);
+-	if (l1 < l2)
+-	    return(1);
+-	if (l1 > l2)
+-	    return(-1);
+-    }
++ */
++long
++xmlXPathOrderDocElems(xmlDocPtr doc) {
++    long count = 0;
++    xmlNodePtr cur;
+ 
+-    for (cur = node1->next;cur != NULL;cur = cur->next)
+-	if (cur == node2)
+-	    return(1);
+-    return(-1); /* assume there is no sibling list corruption */
++    if (doc == NULL)
++	return(-1);
++    cur = doc->children;
++    while (cur != NULL) {
++	if (cur->type == XML_ELEMENT_NODE) {
++	    cur->content = (void *) (-(++count));
++	    if (cur->children != NULL) {
++		cur = cur->children;
++		continue;
++	    }
++	}
++	if (cur->next != NULL) {
++	    cur = cur->next;
++	    continue;
++	}
++	do {
++	    cur = cur->parent;
++	    if (cur == NULL)
++		break;
++	    if (cur == (xmlNodePtr) doc) {
++		cur = NULL;
++		break;
++	    }
++	    if (cur->next != NULL) {
++		cur = cur->next;
++		break;
++	    }
++	} while (cur != NULL);
++    }
++    return(count);
+ }
+ 
+-#ifdef XP_OPTIMIZED_NON_ELEM_COMPARISON
+ /**
+- * xmlXPathCmpNodesExt:
++ * xmlXPathCmpNodes:
+  * @node1:  the first node
+  * @node2:  the second node
+  *
+- * Compare two nodes w.r.t document order.
+- * This one is optimized for handling of non-element nodes.
++ * Compare two nodes w.r.t document order
+  *
+  * Returns -2 in case of error 1 if first point < second point, 0 if
+  *         it's the same node, -1 otherwise
+  */
+-static int
+-xmlXPathCmpNodesExt(xmlNodePtr node1, xmlNodePtr node2) {
++int
++xmlXPathCmpNodes(xmlNodePtr node1, xmlNodePtr node2) {
+     int depth1, depth2;
+-    int misc = 0, precedence1 = 0, precedence2 = 0;
+-    xmlNodePtr miscNode1 = NULL, miscNode2 = NULL;
++    int attr1 = 0, attr2 = 0;
++    xmlNodePtr attrNode1 = NULL, attrNode2 = NULL;
+     xmlNodePtr cur, root;
+-    long l1, l2;
+ 
+     if ((node1 == NULL) || (node2 == NULL))
+ 	return(-2);
+-
+-    if (node1 == node2)
+-	return(0);
+-
+     /*
+      * a couple of optimizations which will avoid computations in most cases
+      */
+-    switch (node1->type) {
+-	case XML_ELEMENT_NODE:
+-	    if (node2->type == XML_ELEMENT_NODE) {
+-		if ((0 > (long) node1->content) && /* TODO: Would a != 0 suffice here? */
+-		    (0 > (long) node2->content) &&
+-		    (node1->doc == node2->doc))
+-		{
+-		    l1 = -((long) node1->content);
+-		    l2 = -((long) node2->content);
+-		    if (l1 < l2)
+-			return(1);
+-		    if (l1 > l2)
+-			return(-1);
+-		} else
+-		    goto turtle_comparison;
+-	    }
+-	    break;
+-	case XML_ATTRIBUTE_NODE:
+-	    precedence1 = 1; /* element is owner */
+-	    miscNode1 = node1;
+-	    node1 = node1->parent;
+-	    misc = 1;
+-	    break;
+-	case XML_TEXT_NODE:
+-	case XML_CDATA_SECTION_NODE:
+-	case XML_COMMENT_NODE:
+-	case XML_PI_NODE: {
+-	    miscNode1 = node1;
+-	    /*
+-	    * Find nearest element node.
+-	    */
+-	    if (node1->prev != NULL) {
+-		do {
+-		    node1 = node1->prev;
+-		    if (node1->type == XML_ELEMENT_NODE) {
+-			precedence1 = 3; /* element in prev-sibl axis */
+-			break;
+-		    }
+-		    if (node1->prev == NULL) {
+-			precedence1 = 2; /* element is parent */
+-			/*
+-			* URGENT TODO: Are there any cases, where the
+-			* parent of such a node is not an element node?
+-			*/
+-			node1 = node1->parent;
+-			break;
+-		    }
+-		} while (1);
+-	    } else {
+-		precedence1 = 2; /* element is parent */
+-		node1 = node1->parent;
+-	    }
+-	    if ((node1 == NULL) || (node1->type != XML_ELEMENT_NODE) ||
+-		(0 <= (long) node1->content)) {
+-		/*
+-		* Fallback for whatever case.
+-		*/
+-		node1 = miscNode1;
+-		precedence1 = 0;
+-	    } else
+-		misc = 1;
+-	}
+-	    break;
+-	case XML_NAMESPACE_DECL:
+-	    /*
+-	    * TODO: why do we return 1 for namespace nodes?
+-	    */
+-	    return(1);
+-	default:
+-	    break;
++    if (node1 == node2)		/* trivial case */
++	return(0);
++    if (node1->type == XML_ATTRIBUTE_NODE) {
++	attr1 = 1;
++	attrNode1 = node1;
++	node1 = node1->parent;
+     }
+-    switch (node2->type) {
+-	case XML_ELEMENT_NODE:
+-	    break;
+-	case XML_ATTRIBUTE_NODE:
+-	    precedence2 = 1; /* element is owner */
+-	    miscNode2 = node2;
+-	    node2 = node2->parent;
+-	    misc = 1;
+-	    break;
+-	case XML_TEXT_NODE:
+-	case XML_CDATA_SECTION_NODE:
+-	case XML_COMMENT_NODE:
+-	case XML_PI_NODE: {
+-	    miscNode2 = node2;
+-	    if (node2->prev != NULL) {
+-		do {
+-		    node2 = node2->prev;
+-		    if (node2->type == XML_ELEMENT_NODE) {
+-			precedence2 = 3; /* element in prev-sibl axis */
+-			break;
+-		    }
+-		    if (node2->prev == NULL) {
+-			precedence2 = 2; /* element is parent */
+-			node2 = node2->parent;
+-			break;
+-		    }
+-		} while (1);
+-	    } else {
+-		precedence2 = 2; /* element is parent */
+-		node2 = node2->parent;
+-	    }
+-	    if ((node2 == NULL) || (node2->type != XML_ELEMENT_NODE) ||
+-		(0 <= (long) node1->content))
+-	    {
+-		node2 = miscNode2;
+-		precedence2 = 0;
+-	    } else
+-		misc = 1;
+-	}
+-	    break;
+-	case XML_NAMESPACE_DECL:
+-	    return(1);
+-	default:
+-	    break;
++    if (node2->type == XML_ATTRIBUTE_NODE) {
++	attr2 = 1;
++	attrNode2 = node2;
++	node2 = node2->parent;
+     }
+-    if (misc) {
+-	if (node1 == node2) {
+-	    if (precedence1 == precedence2) {
+-		/*
+-		* The ugly case; but normally there aren't many
+-		* adjacent non-element nodes around.
+-		*/
+-		cur = miscNode2->prev;
++    if (node1 == node2) {
++	if (attr1 == attr2) {
++	    /* not required, but we keep attributes in order */
++	    if (attr1 != 0) {
++	        cur = attrNode2->prev;
+ 		while (cur != NULL) {
+-		    if (cur == miscNode1)
+-			return(1);
+-		    if (cur->type == XML_ELEMENT_NODE)
+-			return(-1);
++		    if (cur == attrNode1)
++		        return (1);
+ 		    cur = cur->prev;
+ 		}
+ 		return (-1);
+-	    } else {
+-		/*
+-		* Evaluate based on higher precedence wrt to the element.
+-		* TODO: This assumes attributes are sorted before content.
+-		*   Is this 100% correct?
+-		*/
+-		if (precedence1 < precedence2)
+-		    return(1);
+-		else
+-		    return(-1);
+-	    }
+-	}
+-	/*
+-	* Special case: One of the helper-elements is contained by the other.
+-	* <foo>
+-	*   <node2>
+-	*     <node1>Text-1(precedence1 == 2)</node1>
+-	*   </node2>
+-	*   Text-6(precedence2 == 3)
+-	* </foo>
+-	*/
+-	if ((precedence2 == 3) && (precedence1 > 1)) {
+-	    cur = node1->parent;
+-	    while (cur) {
+-		if (cur == node2)
+-		    return(1);
+-		cur = cur->parent;
+-	    }
+-	}
+-	if ((precedence1 == 3) && (precedence2 > 1)) {
+-	    cur = node2->parent;
+-	    while (cur) {
+-		if (cur == node1)
+-		    return(-1);
+-		cur = cur->parent;
+ 	    }
++	    return(0);
+ 	}
++	if (attr2 == 1)
++	    return(1);
++	return(-1);
+     }
++    if ((node1->type == XML_NAMESPACE_DECL) ||
++        (node2->type == XML_NAMESPACE_DECL))
++	return(1);
++    if (node1 == node2->prev)
++	return(1);
++    if (node1 == node2->next)
++	return(-1);
+ 
+     /*
+      * Speedup using document order if availble.
+@@ -3324,6 +3328,7 @@ xmlXPathCmpNodesExt(xmlNodePtr node1, xmlNodePtr node2) {
+ 	(0 > (long) node1->content) &&
+ 	(0 > (long) node2->content) &&
+ 	(node1->doc == node2->doc)) {
++	long l1, l2;
+ 
+ 	l1 = -((long) node1->content);
+ 	l2 = -((long) node2->content);
+@@ -3333,12 +3338,6 @@ xmlXPathCmpNodesExt(xmlNodePtr node1, xmlNodePtr node2) {
+ 	    return(-1);
+     }
+ 
+-turtle_comparison:
+-
+-    if (node1 == node2->prev)
+-	return(1);
+-    if (node1 == node2->next)
+-	return(-1);
+     /*
+      * compute depth to root
+      */
+@@ -3392,6 +3391,7 @@ turtle_comparison:
+ 	(0 > (long) node1->content) &&
+ 	(0 > (long) node2->content) &&
+ 	(node1->doc == node2->doc)) {
++	long l1, l2;
+ 
+ 	l1 = -((long) node1->content);
+ 	l2 = -((long) node2->content);
+@@ -3406,7 +3406,6 @@ turtle_comparison:
+ 	    return(1);
+     return(-1); /* assume there is no sibling list corruption */
+ }
+-#endif /* XP_OPTIMIZED_NON_ELEM_COMPARISON */
+ 
+ /**
+  * xmlXPathNodeSetSort:
+-- 
+1.8.4.1
+

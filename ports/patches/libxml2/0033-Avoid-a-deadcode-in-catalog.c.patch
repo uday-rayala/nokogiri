@@ -1,0 +1,28 @@
+From b8bdc258dec460c0d07b50223792e26bc78b2f2d Mon Sep 17 00:00:00 2001
+From: Daniel Veillard <veillard@redhat.com>
+Date: Mon, 30 Sep 2013 11:12:04 +0800
+Subject: [PATCH 33/35] Avoid a deadcode in catalog.c
+
+For https://bugzilla.gnome.org/show_bug.cgi?id=703504
+---
+ catalog.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/catalog.c b/catalog.c
+index 8e34cd2..549e592 100644
+--- a/catalog.c
++++ b/catalog.c
+@@ -3550,8 +3550,8 @@ xmlCatalogSetDefaultPrefer(xmlCatalogPrefer prefer) {
+ 		xmlGenericError(xmlGenericErrorContext,
+ 			"Setting catalog preference to SYSTEM\n");
+ 		break;
+-	    case XML_CATA_PREFER_NONE:
+-		break;
++	    default:
++		return(ret);
+ 	}
+     }
+     xmlCatalogDefaultPrefer = prefer;
+-- 
+1.8.4.1
+

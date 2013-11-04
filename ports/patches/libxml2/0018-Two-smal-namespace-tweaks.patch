@@ -1,0 +1,41 @@
+From 81b961788a7eb01b46e6a4c44375585cd4e18056 Mon Sep 17 00:00:00 2001
+From: Daniel Veillard <veillard@redhat.com>
+Date: Mon, 22 Jul 2013 13:01:11 +0800
+Subject: [PATCH 18/35] Two smal namespace tweaks
+
+An improvement of the documentation, and an extra safety check
+for xmlSetNs()
+---
+ tree.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/tree.c b/tree.c
+index 7e5af26..7981771 100644
+--- a/tree.c
++++ b/tree.c
+@@ -717,8 +717,11 @@ xmlGetBufferAllocationScheme(void) {
+  * Creation of a new Namespace. This function will refuse to create
+  * a namespace with a similar prefix than an existing one present on this
+  * node.
++ * Note that for a default namespace, @prefix should be NULL.
++ *
+  * We use href==NULL in the case of an element creation where the namespace
+  * was not defined.
++ *
+  * Returns a new namespace pointer or NULL
+  */
+ xmlNsPtr
+@@ -803,7 +806,9 @@ xmlSetNs(xmlNodePtr node, xmlNsPtr ns) {
+ #endif
+ 	return;
+     }
+-    node->ns = ns;
++    if ((node->type == XML_ELEMENT_NODE) ||
++        (node->type == XML_ATTRIBUTE_NODE))
++	node->ns = ns;
+ }
+ 
+ /**
+-- 
+1.8.4.1
+

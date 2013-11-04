@@ -1,0 +1,28 @@
+From ccc9cf9276d9f603f01302da885155556d236b56 Mon Sep 17 00:00:00 2001
+From: Daniel Veillard <veillard@redhat.com>
+Date: Mon, 22 Jul 2013 14:24:16 +0800
+Subject: [PATCH 20/35] Fix a wrong test
+
+https://bugzilla.gnome.org/show_bug.cgi?id=704530
+
+Arg is an array on the stack and can't be NULL
+---
+ debugXML.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/debugXML.c b/debugXML.c
+index c8efe6a..3c13783 100644
+--- a/debugXML.c
++++ b/debugXML.c
+@@ -2946,7 +2946,7 @@ xmlShell(xmlDocPtr doc, char *filename, xmlShellReadlineFunc input,
+         } else if (!strcmp(command, "save")) {
+             xmlShellSave(ctxt, arg, NULL, NULL);
+         } else if (!strcmp(command, "write")) {
+-	    if ((arg == NULL) || (arg[0] == 0))
++	    if (arg[0] == 0)
+ 		xmlGenericError(xmlGenericErrorContext,
+                         "Write command requires a filename argument\n");
+ 	    else
+-- 
+1.8.4.1
+
